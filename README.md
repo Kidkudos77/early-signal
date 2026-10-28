@@ -8,7 +8,7 @@ NAFSI Student Data Challenge — Track 3 (SENS-D).
 - **Static showcase (GitHub Pages):** pre-computed results + maps →
   `https://<your-username>.github.io/<repo>/`
 - **Live interactive app (Streamlit Community Cloud):** full dashboard with
-  live controls → _(URL added after deployment)_
+  live controls → **https://early-signal-dm5ssa7g3ntxtup5zagwe2.streamlit.app/**
 
 ---
 
