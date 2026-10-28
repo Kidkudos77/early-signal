@@ -90,7 +90,8 @@ def build_equity_map(svi, vectors) -> str:
 # ---------------------------------------------------------------------------
 # Landing page
 # ---------------------------------------------------------------------------
-def build_index(national, cells, equity_map_name, live_app_url) -> None:
+def build_index(national, cells, equity_map_name, live_app_url,
+                figure_gallery=None) -> None:
     # Trade-off matrix rows.
     tdf = routing.trade_off_dataframe()
     rows = "\n".join(
@@ -130,6 +131,30 @@ def build_index(national, cells, equity_map_name, live_app_url) -> None:
         'deploy on Streamlit Community Cloud and rebuild</span>'
     )
 
+    # "The Mathematics" figure gallery (one block per step).
+    gallery_html = ""
+    if figure_gallery:
+        blocks = []
+        for step_title, items in figure_gallery:
+            figs = "\n".join(
+                f'<figure><img loading="lazy" src="figures/{html.escape(fn)}" '
+                f'alt="{html.escape(cap)}">'
+                f'<figcaption>{html.escape(cap)}</figcaption></figure>'
+                for fn, cap in items
+            )
+            blocks.append(
+                f'<h3 style="font-size:1.05rem;color:var(--purple);'
+                f'margin:1.2rem 0 .4rem;">{html.escape(step_title)}</h3>'
+                f'<div class="gallery">{figs}</div>'
+            )
+        gallery_html = (
+            '<section><h2>The Mathematics</h2>'
+            '<p>Every pipeline step, visualized — the joins, the cyclical season '
+            'encoding, out-of-fold calibration, the Bayesian prior→posterior '
+            'update, the expected-loss decision rule, and the NARMS danger '
+            'weighting.</p>' + "".join(blocks) + '</section>'
+        )
+
     doc = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -167,6 +192,12 @@ def build_index(national, cells, equity_map_name, live_app_url) -> None:
   .note {{ font-size:.85rem; color:#666; }}
   footer {{ text-align:center; color:#888; font-size:.8rem; padding:2rem; }}
   code {{ background:#f0ebf2; padding:.1rem .35rem; border-radius:4px; }}
+  .gallery {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+              gap:1rem; }}
+  .gallery figure {{ margin:0; background:#fafafa; border:1px solid #eee;
+                     border-radius:8px; padding:.6rem; }}
+  .gallery img {{ width:100%; height:auto; border-radius:4px; }}
+  .gallery figcaption {{ font-size:.8rem; color:#555; margin-top:.4rem; }}
 </style>
 </head>
 <body>
@@ -215,6 +246,8 @@ def build_index(national, cells, equity_map_name, live_app_url) -> None:
     <iframe src="{equity_map_name}" title="Equity Impact Map"></iframe>
   </section>
 
+  {gallery_html}
+
   <section>
     <h2>Run it yourself</h2>
     <p>Full interactive dashboard (live controls, API refresh):</p>
@@ -244,6 +277,77 @@ def copy_existing_artifacts() -> list[str]:
     return copied
 
 
+# Figures to surface in the "Mathematics" gallery, grouped by step, with
+# captions. Only those that exist on disk are included.
+FIGURE_GALLERY = [
+    ("Step 1 · Secure ingestion", [
+        ("step1_fsis_join_provenance.png",
+         "FSIS full outer join on form_id — how primary/secondary pathogen "
+         "records match."),
+        ("step1_nors_coverage.png",
+         "NORS foodborne outbreak coverage by year (Salmonella highlighted)."),
+    ]),
+    ("Step 2 · Stateful preprocessing", [
+        ("step2_cyclical_season_encoding.png",
+         "sin/cos day-of-year encoding maps the calendar onto a circle so "
+         "Dec 31 sits next to Jan 1."),
+    ]),
+    ("Step 3 · OOF predictions + calibration", [
+        ("step3_oof_calibration_is_salmonella.png",
+         "Out-of-fold probability distribution and reliability curve — "
+         "is_salmonella."),
+        ("step3_oof_calibration_is_poultry_salmonella.png",
+         "Out-of-fold probability distribution and reliability curve — "
+         "poultry Salmonella."),
+    ]),
+    ("Step 4 · Sequential Bayesian updating", [
+        ("step4_seasonal_prior.png",
+         "The NORS prior encodes the seasonal surge (summer ≈ 2.5× winter)."),
+        ("step4_bayes_update.png",
+         "p(w|D) ∝ p(D|w)p(w): prior Beta updated by FSIS evidence into the "
+         "posterior."),
+    ]),
+    ("Step 5 · Expected loss & danger-weighted optimization", [
+        ("step5_loss_matrix.png",
+         "The asymmetric loss matrix L[k,j] — missing a severe serotype costs "
+         "20× a false alarm."),
+        ("step5_expected_loss_decision.png",
+         "Expected loss Σ L[k,j] p(C_k|x) crossing point gives the Bayes-optimal "
+         "alert threshold."),
+        ("step5_severe_recall.png",
+         "Severe-serotype recall: naive 70% → expected-loss 98% → "
+         "danger-weighted 99%."),
+    ]),
+    ("Step 6 · BEAM validation + NARMS weighting", [
+        ("step6_beam_validation_scatter.png",
+         "Model risk vs. BEAM observed Salmonella share (rate vs. rate) — "
+         "weak but positive agreement."),
+        ("step6_narms_weights.png",
+         "Dynamic NARMS danger weights: MDR Infantis weighted heaviest."),
+    ]),
+]
+
+
+def copy_figures() -> list[tuple[str, list[tuple[str, str]]]]:
+    """Copy generated figures into docs/figures/ and return the present ones."""
+    src_dir = PROJECT_ROOT / "artifacts" / "figures"
+    dst_dir = DOCS / "figures"
+    present: list[tuple[str, list[tuple[str, str]]]] = []
+    if not src_dir.exists():
+        return present
+    dst_dir.mkdir(parents=True, exist_ok=True)
+    for step_title, items in FIGURE_GALLERY:
+        kept = []
+        for fname, caption in items:
+            src = src_dir / fname
+            if src.exists():
+                (dst_dir / fname).write_bytes(src.read_bytes())
+                kept.append((fname, caption))
+        if kept:
+            present.append((step_title, kept))
+    return present
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Build the static Pages site.")
     parser.add_argument("--live-app-url", default="",
@@ -255,12 +359,15 @@ def main(argv=None) -> int:
 
     national, cells, svi, vectors = assemble()
     equity_name = build_equity_map(svi, vectors)
-    build_index(national, cells, equity_name, args.live_app_url)
+    figure_gallery = copy_figures()
+    build_index(national, cells, equity_name, args.live_app_url, figure_gallery)
     extra = copy_existing_artifacts()
 
+    n_figs = sum(len(items) for _, items in figure_gallery)
     print("Static site written to docs/")
     print("  index.html, equity_map.html, .nojekyll" +
           ("".join(f", {e}" for e in extra)))
+    print(f"  figures copied to docs/figures/: {n_figs}")
     print(f"  live app url: {args.live_app_url or '(not set)'}")
     return 0
 

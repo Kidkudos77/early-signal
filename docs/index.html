@@ -35,6 +35,12 @@
   .note { font-size:.85rem; color:#666; }
   footer { text-align:center; color:#888; font-size:.8rem; padding:2rem; }
   code { background:#f0ebf2; padding:.1rem .35rem; border-radius:4px; }
+  .gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+              gap:1rem; }
+  .gallery figure { margin:0; background:#fafafa; border:1px solid #eee;
+                     border-radius:8px; padding:.6rem; }
+  .gallery img { width:100%; height:auto; border-radius:4px; }
+  .gallery figcaption { font-size:.8rem; color:#555; margin-top:.4rem; }
 </style>
 </head>
 <body>
@@ -99,6 +105,14 @@
     highest-vulnerability counties.</p>
     <iframe src="equity_map.html" title="Equity Impact Map"></iframe>
   </section>
+
+  <section><h2>The Mathematics</h2><p>Every pipeline step, visualized — the joins, the cyclical season encoding, out-of-fold calibration, the Bayesian prior→posterior update, the expected-loss decision rule, and the NARMS danger weighting.</p><h3 style="font-size:1.05rem;color:var(--purple);margin:1.2rem 0 .4rem;">Step 1 · Secure ingestion</h3><div class="gallery"><figure><img loading="lazy" src="figures/step1_fsis_join_provenance.png" alt="FSIS full outer join on form_id — how primary/secondary pathogen records match."><figcaption>FSIS full outer join on form_id — how primary/secondary pathogen records match.</figcaption></figure>
+<figure><img loading="lazy" src="figures/step1_nors_coverage.png" alt="NORS foodborne outbreak coverage by year (Salmonella highlighted)."><figcaption>NORS foodborne outbreak coverage by year (Salmonella highlighted).</figcaption></figure></div><h3 style="font-size:1.05rem;color:var(--purple);margin:1.2rem 0 .4rem;">Step 2 · Stateful preprocessing</h3><div class="gallery"><figure><img loading="lazy" src="figures/step2_cyclical_season_encoding.png" alt="sin/cos day-of-year encoding maps the calendar onto a circle so Dec 31 sits next to Jan 1."><figcaption>sin/cos day-of-year encoding maps the calendar onto a circle so Dec 31 sits next to Jan 1.</figcaption></figure></div><h3 style="font-size:1.05rem;color:var(--purple);margin:1.2rem 0 .4rem;">Step 3 · OOF predictions + calibration</h3><div class="gallery"><figure><img loading="lazy" src="figures/step3_oof_calibration_is_salmonella.png" alt="Out-of-fold probability distribution and reliability curve — is_salmonella."><figcaption>Out-of-fold probability distribution and reliability curve — is_salmonella.</figcaption></figure>
+<figure><img loading="lazy" src="figures/step3_oof_calibration_is_poultry_salmonella.png" alt="Out-of-fold probability distribution and reliability curve — poultry Salmonella."><figcaption>Out-of-fold probability distribution and reliability curve — poultry Salmonella.</figcaption></figure></div><h3 style="font-size:1.05rem;color:var(--purple);margin:1.2rem 0 .4rem;">Step 4 · Sequential Bayesian updating</h3><div class="gallery"><figure><img loading="lazy" src="figures/step4_seasonal_prior.png" alt="The NORS prior encodes the seasonal surge (summer ≈ 2.5× winter)."><figcaption>The NORS prior encodes the seasonal surge (summer ≈ 2.5× winter).</figcaption></figure>
+<figure><img loading="lazy" src="figures/step4_bayes_update.png" alt="p(w|D) ∝ p(D|w)p(w): prior Beta updated by FSIS evidence into the posterior."><figcaption>p(w|D) ∝ p(D|w)p(w): prior Beta updated by FSIS evidence into the posterior.</figcaption></figure></div><h3 style="font-size:1.05rem;color:var(--purple);margin:1.2rem 0 .4rem;">Step 5 · Expected loss &amp; danger-weighted optimization</h3><div class="gallery"><figure><img loading="lazy" src="figures/step5_loss_matrix.png" alt="The asymmetric loss matrix L[k,j] — missing a severe serotype costs 20× a false alarm."><figcaption>The asymmetric loss matrix L[k,j] — missing a severe serotype costs 20× a false alarm.</figcaption></figure>
+<figure><img loading="lazy" src="figures/step5_expected_loss_decision.png" alt="Expected loss Σ L[k,j] p(C_k|x) crossing point gives the Bayes-optimal alert threshold."><figcaption>Expected loss Σ L[k,j] p(C_k|x) crossing point gives the Bayes-optimal alert threshold.</figcaption></figure>
+<figure><img loading="lazy" src="figures/step5_severe_recall.png" alt="Severe-serotype recall: naive 70% → expected-loss 98% → danger-weighted 99%."><figcaption>Severe-serotype recall: naive 70% → expected-loss 98% → danger-weighted 99%.</figcaption></figure></div><h3 style="font-size:1.05rem;color:var(--purple);margin:1.2rem 0 .4rem;">Step 6 · BEAM validation + NARMS weighting</h3><div class="gallery"><figure><img loading="lazy" src="figures/step6_beam_validation_scatter.png" alt="Model risk vs. BEAM observed Salmonella share (rate vs. rate) — weak but positive agreement."><figcaption>Model risk vs. BEAM observed Salmonella share (rate vs. rate) — weak but positive agreement.</figcaption></figure>
+<figure><img loading="lazy" src="figures/step6_narms_weights.png" alt="Dynamic NARMS danger weights: MDR Infantis weighted heaviest."><figcaption>Dynamic NARMS danger weights: MDR Infantis weighted heaviest.</figcaption></figure></div></section>
 
   <section>
     <h2>Run it yourself</h2>
