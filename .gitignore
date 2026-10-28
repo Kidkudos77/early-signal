@@ -8,6 +8,12 @@
 # Generated model artifacts (OOF tables, SHAP plots, summaries) — regenerable
 artifacts/
 
+# Transient build/run logs
+build_log.txt
+*_run.txt
+*_out.txt
+*_probe.txt
+
 # Python
 __pycache__/
 *.py[cod]

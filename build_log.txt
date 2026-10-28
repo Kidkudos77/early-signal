@@ -1,4 +1,0 @@
-Static site written to docs/
-  index.html, equity_map.html, .nojekyll, beam_validation.html
-  live app url: (not set)
-
