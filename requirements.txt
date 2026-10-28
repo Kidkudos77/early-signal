@@ -17,8 +17,9 @@ xgboost>=2.1
 shap>=0.46
 matplotlib>=3.8
 
-# Dashboard UI
-streamlit>=1.39
+# Dashboard UI — pinned to the version the app is tested against so the
+# hosted build renders identically to local.
+streamlit==1.66.1
 
 # Bayesian + statistics
 scipy>=1.12

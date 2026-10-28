@@ -56,6 +56,11 @@ SVI_COUNTY_FILES: dict[int, Path] = {
 # ATSDR missing-value sentinel used across SVI vintages.
 SVI_MISSING_SENTINEL = -999
 
+# U.S. Census 2023 Gazetteer county internal points (lat/lon per county FIPS).
+# Public download, trimmed to FIPS/state/lat/lon. Used to route donations to
+# real nearby counties instead of state centroids.
+COUNTY_CENTROIDS_CSV: Path = DATA_DIR / "county_centroids_2023.csv"
+
 
 # ---------------------------------------------------------------------------
 # API endpoints (public URLs — not secrets)

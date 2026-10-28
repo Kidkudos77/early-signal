@@ -1,27 +1,24 @@
-"""Early Signal — HCXAI command center (Streamlit).
+"""Early Signal — Salmonella surge command center (Streamlit).
 
 Run from the project root:
     .venv\\Scripts\\streamlit run app\\dashboard.py
 
-A human-centered decision-support tool for poultry plant managers. The raw
-statistics (Bayesian posteriors, tau thresholds, log-odds, SHAP) are abstracted
-into operational KPIs and plain-English insight at the top level; the technical
-proof is tucked behind a "Detailed Diagnostics" expander (progressive
-disclosure). The three brief-mandated sections — Surge Alert, Trade-Off Matrix,
-Equity Impact Map — remain, reframed as a command center:
+Answers the SENS-D question for a poultry plant manager: is a Salmonella surge
+coming for my region this month, what should my lines do about it, and if
+product has to be cooked, which vulnerable communities nearby should receive it?
 
-  * Top command bar: State / Month / Threshold, dynamically linked.
-  * Executive KPI cards + natural-language insight.
-  * Auto-recommended routing (backend crosses tau), color-coded matrix.
-  * Equity map locked beside the logistics manifest (2:1 columns).
-  * Decision record: Accept / Override + reason code + exportable audit log.
-  * Detailed Diagnostics: the Bayesian math, SHAP, raw numbers (opt-in).
-
-Honest notes:
-  * Risk drivers are derived from what the model actually computes (seasonal +
-    geographic effects, SHAP features) — no invented signals.
-  * The audit log persists in-session (st.session_state) and is downloadable;
-    a production deployment would persist it to a database.
+Design notes:
+  * Every state and every month is covered. Each region/month starts from its
+    CDC NORS outbreak history (Bayesian prior) and is updated with FSIS plant
+    samples where they exist.
+  * The surge threshold is automatic: "surge" means risk above the normal
+    yearly level from NORS history. No manual sensitivity control.
+  * The equity section shows the chain from food safety to food security:
+    detect the surge, cook the at-risk lots, deliver the safe protein to food
+    banks in high-vulnerability (CDC SVI) counties within the service radius.
+  * No raw HTML in the page body. Styling is injected with st.html (style-only
+    content does not render as text), and all banners/cards are native
+    Streamlit components.
 """
 from __future__ import annotations
 
@@ -36,7 +33,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import pandas as pd  # noqa: E402
 import streamlit as st  # noqa: E402
 
-from src import bayes, ingest_local, routing  # noqa: E402
+from src import bayes, decision, geo, ingest_local, routing  # noqa: E402
 
 st.set_page_config(
     page_title="Early Signal — Salmonella Surge Command Center",
@@ -45,40 +42,20 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-MONTH_NAMES = ["", "January", "February", "March", "April", "May", "June",
-               "July", "August", "September", "October", "November", "December"]
-PEAK_MONTHS = (6, 7, 8, 9)
+MONTHS = decision.MONTHS
 
-
-# ---------------------------------------------------------------------------
-# Scientific aesthetic — injected CSS
-# ---------------------------------------------------------------------------
-st.markdown(
+# Style-only content: Streamlit applies it to the page without rendering text.
+st.html(
     """
     <style>
-      /* Tighten the main container; enterprise density. */
-      .block-container { padding-top: 1.2rem; padding-bottom: 2rem;
-                         max-width: 1280px; }
-      /* Command-bar panel look. */
-      .cmd-bar { background: linear-gradient(135deg,#1a1a2e,#2a1a3e);
-                 border-radius: 12px; padding: 1.1rem 1.4rem; margin-bottom: 1rem; }
-      /* KPI metric cards: stronger hierarchy. */
+      .block-container { padding-top: 1.4rem; padding-bottom: 2rem; max-width: 1320px; }
       div[data-testid="stMetric"] { background:#ffffff; border:1px solid #e6e1ea;
-            border-radius:10px; padding:0.8rem 1rem; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-      div[data-testid="stMetricLabel"] { font-weight:600; color:#555; }
-      /* Section headers. */
-      h2 { color:#4a148c; border-bottom:2px solid #efe7f3; padding-bottom:.3rem; }
+          border-radius:10px; padding:.75rem 1rem; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+      div[data-testid="stMetricLabel"] p { font-weight:600; color:#555; }
+      h2 { color:#4a148c; }
       h3 { color:#6a1b9a; }
-      /* Risk banner. */
-      .risk-banner { border-radius:10px; padding:1rem 1.3rem; color:#fff;
-                     font-size:1.15rem; font-weight:600; margin:.4rem 0 1rem; }
-      /* Recommended action chip. */
-      .rec-chip { display:inline-block; background:#4a148c; color:#fff;
-                  padding:.5rem 1rem; border-radius:999px; font-weight:700; }
-      .stApp { background:#f7f5fa; }
     </style>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 
@@ -86,435 +63,394 @@ st.markdown(
 # Cached backend
 # ---------------------------------------------------------------------------
 @st.cache_data(show_spinner="Loading risk model…")
-def load_backend():
+def load_model():
     priors = bayes.build_priors()
-    national = {m: priors[("__NATIONAL__", m)].prior_mean for m in range(1, 13)}
-    national_overall = sum(national.values()) / 12.0
+    national = {m: priors[("__NATIONAL__", m)] for m in range(1, 13)}
+    normal_level = sum(p.prior_mean for p in national.values()) / 12.0
     try:
-        posts = bayes.posteriors_for_fsis(poultry_only=True)
+        evidence = bayes.fsis_batches_by_cell(poultry_only=True)
     except Exception:
-        posts = {}
-    posteriors = {
-        (st_, mo): {
-            "state": st_, "month": mo,
-            "prior_mean": p.prior_mean, "posterior_mean": p.mean,
-            "k": p.evidence_k, "n": p.evidence_n,
-            "alpha": p.alpha, "beta": p.beta,
-            "prior_alpha": p.prior_alpha, "prior_beta": p.prior_beta,
-        }
-        for (st_, mo), p in posts.items()
-    }
-    return priors, national, national_overall, posteriors
+        evidence = {}
+    states = sorted({k[0] for k in priors if k[0] != "__NATIONAL__"},
+                    key=lambda s: geo.to_name(s) or s)
+    return priors, national, normal_level, evidence, states
 
 
-@st.cache_data(show_spinner="Loading CDC/ATSDR SVI…")
-def load_svi():
-    return ingest_local.load_svi(2022)
+@st.cache_data(show_spinner="Loading CDC/ATSDR SVI and county locations…")
+def load_vulnerability():
+    return ingest_local.load_svi_vulnerability(2022)
 
 
-priors, national, national_overall, posteriors = load_backend()
+priors, national, normal_level, evidence, states = load_model()
+vuln = load_vulnerability()
 
-# States/months that have real FSIS evidence cells.
-evidence_states = sorted({k[0] for k in posteriors})
-STATE_OPTIONS = ["National (seasonal baseline)"] + evidence_states
+
+def cell_posterior(state: str | None, month: int) -> tuple[bayes.Posterior, bool]:
+    """Posterior for a region/month. Returns (posterior, has_local_history)."""
+    if state is None:
+        return bayes.init_posterior(national[month]), True
+    has_local = (state, month) in priors
+    prior = bayes.get_prior(priors, state, month)
+    post = bayes.init_posterior(prior)
+    if (state, month) in evidence:
+        k, n = evidence[(state, month)]
+        post = bayes.update_posterior(post, k, n)
+    return post, has_local
+
+
+@st.cache_data(show_spinner=False)
+def need_share_by_state() -> dict[str, float]:
+    return {s: decision.local_need(s, vuln).share_high for s in states}
+
+
+@st.cache_data(show_spinner=False)
+def scan_recommendations() -> pd.DataFrame:
+    """Recommendation for every state x month (shown in diagnostics)."""
+    shares = need_share_by_state()
+    rows = []
+    for s in states:
+        for m in range(1, 13):
+            post, _ = cell_posterior(s, m)
+            p = post.prob_exceeds(normal_level)
+            rows.append({"state": s, "month": m, "surge_probability": p,
+                         "need_share": shares[s],
+                         "action": decision.recommend(p, shares[s]).scenario})
+    return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------------------
-# Session state (audit log + dynamic filters)
+# Command bar
 # ---------------------------------------------------------------------------
-if "audit_log" not in st.session_state:
-    st.session_state.audit_log = []
-if "state_sel" not in st.session_state:
-    st.session_state.state_sel = STATE_OPTIONS[0]
-
-
-def months_for_state(state_label: str) -> list[int]:
-    """Months available for the chosen state (dynamic linkage)."""
-    if state_label.startswith("National"):
-        return list(range(1, 13))
-    months = sorted({mo for (st_, mo) in posteriors if st_ == state_label})
-    return months or list(range(1, 13))
-
-
-def _on_state_change():
-    # Reset month to the first valid one for the new state.
-    st.session_state.month_sel = months_for_state(st.session_state.state_sel)[0]
-
-
-# ---------------------------------------------------------------------------
-# COMMAND BAR — filters front and center
-# ---------------------------------------------------------------------------
-st.markdown('<div class="cmd-bar">', unsafe_allow_html=True)
-st.markdown("### 🐔 Early Signal · Salmonella Surge Command Center")
-st.caption("Proactive decision support for FSIS-regulated RTE poultry · "
+st.title("🐔 Early Signal · Salmonella Surge Command Center")
+st.caption("Proactive decision support for FSIS-regulated ready-to-eat poultry · "
            "NAFSI SENS-D, Track 3")
 
-cbar = st.columns([1.1, 1.1, 1.3])
-with cbar[0]:
-    state_sel = st.selectbox(
-        "📍 Facility / region", STATE_OPTIONS, key="state_sel",
-        on_change=_on_state_change,
-    )
-with cbar[1]:
-    avail_months = months_for_state(state_sel)
-    if "month_sel" not in st.session_state or \
-            st.session_state.month_sel not in avail_months:
-        st.session_state.month_sel = avail_months[0] if state_sel.startswith("National") \
-            else avail_months[0]
-    month_sel = st.selectbox(
-        "🗓️ Month", avail_months, key="month_sel",
-        format_func=lambda m: MONTH_NAMES[m],
-    )
-with cbar[2]:
-    tau = st.slider(
-        "🎚️ Alert sensitivity", min_value=0.05, max_value=0.50, value=0.20,
-        step=0.01,
-        help="How cautious the system is. Lower = alerts sooner. "
-             "(Technically: the risk threshold τ for P(risk > τ).)",
-    )
-st.markdown('</div>', unsafe_allow_html=True)
+NATIONAL = "United States (all regions)"
+region_options = [NATIONAL] + states
+
+with st.container(border=True):
+    c1, c2, c3 = st.columns([1.3, 1, 1.7])
+    with c1:
+        region = st.selectbox(
+            "📍 Facility region", region_options,
+            format_func=lambda s: s if s == NATIONAL else f"{geo.to_name(s)} ({s})",
+        )
+    with c2:
+        month = st.selectbox("🗓️ Month", list(range(1, 13)),
+                             index=datetime.now().month - 1,
+                             format_func=lambda m: MONTHS[m])
+    with c3:
+        st.markdown("**🎯 Surge threshold: automatic**")
+        st.caption(f"A surge means Salmonella risk above the normal yearly level "
+                   f"({normal_level:.0%}), set from CDC outbreak history. "
+                   f"Nothing to tune.")
+
+state = None if region == NATIONAL else region
+loc_name = "the United States" if state is None else geo.to_name(state)
+
+post, has_local = cell_posterior(state, month)
+p_surge = post.prob_exceeds(normal_level)
+risk = post.mean
+tier = decision.risk_tier(p_surge)
+
+need = decision.local_need(state, vuln) if state else None
+rec = decision.recommend(p_surge, need.share_high if need else None)
+fsis_k, fsis_n = evidence.get((state, month), (0, 0)) if state else (0, 0)
 
 
 # ---------------------------------------------------------------------------
-# Resolve the selected cell -> posterior + derived quantities
+# KPIs + plain-English insight
 # ---------------------------------------------------------------------------
-is_baseline = state_sel.startswith("National")
-if is_baseline:
-    pm = national[month_sel]
-    prior_mean = pm
-    cell = {"state": "US", "month": month_sel, "posterior_mean": pm,
-            "prior_mean": pm, "k": 0, "n": 0,
-            "alpha": None, "beta": None, "prior_alpha": None, "prior_beta": None}
-    p_exceeds = None  # no Beta posterior to integrate for the national curve
-else:
-    cell = posteriors[(state_sel, month_sel)]
-    pm = cell["posterior_mean"]
-    prior_mean = cell["prior_mean"]
-    post_obj = bayes.Posterior(
-        state=cell["state"], month=cell["month"],
-        alpha=cell["alpha"], beta=cell["beta"],
-        prior_alpha=cell["prior_alpha"], prior_beta=cell["prior_beta"],
-        evidence_k=cell["k"], evidence_n=cell["n"],
-    )
-    p_exceeds = post_obj.prob_exceeds(tau)
-
-tier_label, tier_emoji, tier_color = routing.risk_tier(p_exceeds, pm)
-rec_name, rec_reason = routing.recommend_scenario(p_exceeds, pm, tau)
-is_peak = month_sel in PEAK_MONTHS
-drivers = routing.risk_drivers(
-    state=cell["state"], month=month_sel, posterior_mean=pm, prior_mean=prior_mean,
-    national_month=national[month_sel], national_overall=national_overall,
-    is_peak_season=is_peak,
-)
-
-
-# ===========================================================================
-# EXECUTIVE KPIs + natural-language insight
-# ===========================================================================
-loc_name = "National" if is_baseline else cell["state"]
-baseline_delta = (pm - national[month_sel]) * 100 if not is_baseline else None
-
 k1, k2, k3, k4 = st.columns(4)
-with k1:
-    st.metric("Risk level", f"{tier_emoji} {tier_label}")
-with k2:
-    st.metric("Surge probability", f"{pm:.0%}",
-              delta=(f"{baseline_delta:+.0f} pts vs national"
-                     if baseline_delta is not None else None))
-with k3:
-    if p_exceeds is not None:
-        st.metric("Alert confidence", f"{p_exceeds:.0%}",
-                  help="Chance the true risk exceeds your alert sensitivity.")
-    else:
-        st.metric("Alert confidence", "—")
-with k4:
-    st.metric("Location · Month", f"{loc_name} · {MONTH_NAMES[month_sel][:3]}")
+k1.metric("Risk level", f"{tier.emoji} {tier.label}")
+k2.metric("Surge probability", f"{p_surge:.0%}",
+          help="Chance that this region's Salmonella risk this month is above "
+               "the normal yearly level.")
+k3.metric("Expected risk", f"{risk:.0%}",
+          delta=f"{(risk - normal_level) * 100:+.0f} pts vs normal",
+          delta_color="inverse",
+          help="The model's estimate of the share of foodborne outbreaks that are "
+               "Salmonella for this region and month.")
+k4.metric("Location · Month",
+          f"{'US' if state is None else state} · {MONTHS[month][:3]}")
 
-# Risk banner (colored by tier) + natural-language insight.
-season_word = "peak season" if is_peak else "off-peak season"
-vs_base = pm - national[month_sel]
-nl_insight = (
-    f"<b>Risk Level: {tier_label.title()}.</b> "
-    f"{loc_name} in {MONTH_NAMES[month_sel]} ({season_word}) — "
-    f"surge probability {pm:.0%}"
-)
-if not is_baseline and abs(vs_base) > 0.005:
-    nl_insight += (f", {abs(vs_base) * 100:.0f} pts "
-                   f"{'above' if vs_base > 0 else 'below'} the national level "
-                   f"for this month.")
-else:
-    nl_insight += "."
-st.markdown(
-    f'<div class="risk-banner" style="background:{tier_color};">{nl_insight}</div>',
-    unsafe_allow_html=True,
-)
+getattr(st, tier.level)(decision.headline(
+    "The United States" if state is None else loc_name,
+    month, tier, p_surge, normal_level))
 
-# Layer 1 — plain-English risk drivers.
-st.markdown("**Primary risk drivers**")
-for d in drivers:
+st.markdown("**What is driving this**")
+for d in decision.drivers(loc_name=loc_name, month=month, risk=risk,
+                          national_month=national[month].prior_mean,
+                          normal_level=normal_level, has_local_history=has_local,
+                          fsis_k=fsis_k, fsis_n=fsis_n):
     st.markdown(f"- {d}")
 
 
-# ===========================================================================
-# SECTION 2 — Trade-Off Matrix (auto-recommended, color-coded)
-# ===========================================================================
-st.markdown("## Recommended Action")
+# ---------------------------------------------------------------------------
+# Recommended action + trade-off matrix
+# ---------------------------------------------------------------------------
+st.header("Recommended action")
+with st.container(border=True):
+    a1, a2 = st.columns([1, 2])
+    a1.subheader(f"▶ {rec.scenario}")
+    a2.markdown(rec.why)
+    if state is None:
+        a2.caption("Select a facility region to include local community need in "
+                   "the recommendation.")
+st.caption(
+    f"How it is chosen: surge probability ≥ {decision.HIGH_SURGE:.0%} with "
+    f"≥ {decision.HIGH_NEED_SHARE:.0%} of counties within "
+    f"{decision.SERVICE_RADIUS_MI} miles high-vulnerability → Donate Cooked "
+    f"Product · ≥ {decision.HIGH_SURGE:.0%} → Divert to Cooked Lines · "
+    f"≥ {decision.ELEVATED_SURGE:.0%} → Trigger Enhanced Interventions · "
+    f"otherwise → Adjust Transit Radii.")
 
-rc1, rc2 = st.columns([1, 2])
-with rc1:
-    st.markdown(f'<div class="rec-chip">▶ {rec_name}</div>',
-                unsafe_allow_html=True)
-with rc2:
-    st.markdown(f"_{rec_reason}_")
-
-# Color-coded trade-off matrix via pandas Styler, recommended row flagged.
 tdf = routing.trade_off_dataframe().copy()
-tdf.insert(0, "", tdf["Scenario"].apply(lambda s: "✅" if s == rec_name else ""))
+tdf.insert(0, "Pick", tdf["Scenario"].map(lambda s: "✅" if s == rec.scenario else ""))
+_cost = {"Low": "#c8e6c9", "Moderate": "#fff9c4", "High": "#ffcdd2"}
+_safety = {"High via Heat kill-step": "#c8e6c9", "High": "#c8e6c9",
+           "Moderate": "#fff9c4", "Moderate via Antimicrobial washes": "#fff9c4"}
 
-_cost_rank = {"Low": 0, "Moderate": 1, "High": 2, "Variable": 1}
-_safety_rank = {"Moderate via Antimicrobial washes": 0, "Moderate": 0,
-                "High via Heat kill-step": 1, "High": 1}
 
-
-def _style_matrix(df: pd.DataFrame):
+def _style(df: pd.DataFrame):
     sty = df.style
-    # Numeric helper columns for gradients (hidden).
-    cost_num = df["Cost"].map(_cost_rank).fillna(1)
-    safe_num = df["Safety"].map(_safety_rank).fillna(0)
-
-    def cost_color(val):
-        r = _cost_rank.get(val, 1)
-        c = ["#c8e6c9", "#fff9c4", "#ffcdd2"][int(r)]
-        return f"background-color: {c};"
-
-    def safety_color(val):
-        r = _safety_rank.get(val, 0)
-        c = ["#fff9c4", "#c8e6c9"][int(r)]
-        return f"background-color: {c};"
-
-    def protein_color(val):
-        return ("background-color: #c8e6c9;" if str(val).strip() == "100%"
-                else "background-color: #fff9c4;")
-
-    sty = sty.map(cost_color, subset=["Cost"])
-    sty = sty.map(safety_color, subset=["Safety"])
-    sty = sty.map(protein_color, subset=["Protein Kept"])
-
-    def highlight_row(row):
-        if row["Scenario"] == rec_name:
-            return ["font-weight:700; border-top:2px solid #4a148c; "
-                    "border-bottom:2px solid #4a148c;"] * len(row)
-        return [""] * len(row)
-
-    sty = sty.apply(highlight_row, axis=1)
-    return sty
+    sty = sty.map(lambda v: f"background-color:{_cost.get(v, '#fff9c4')};", subset=["Cost"])
+    sty = sty.map(lambda v: f"background-color:{_safety.get(v, '#fff9c4')};", subset=["Safety"])
+    sty = sty.map(lambda v: "background-color:#c8e6c9;" if v == "100%"
+                  else "background-color:#fff9c4;", subset=["Protein Kept"])
+    sty = sty.apply(lambda r: ["font-weight:700;"] * len(r)
+                    if r["Scenario"] == rec.scenario else [""] * len(r), axis=1)
+    return sty.hide(axis="index")
 
 
-st.markdown("### Trade-Off Matrix")
-st.caption("Color legend: green = favorable, amber = moderate, red = costly. "
-           "The ✅ row is the system's recommendation at your current settings.")
-st.table(_style_matrix(tdf))
+st.subheader("Trade-off matrix")
+st.caption("Green = favorable · amber = moderate · red = costly. ✅ marks the "
+           "recommendation for the region and month selected above.")
+st.table(_style(tdf))
 
 
-# ===========================================================================
-# SECTION 3 — Equity Impact Map + logistics manifest (2:1)
-# ===========================================================================
-st.markdown("## Equity Impact Map")
-st.caption("Where cooked donated product should flow: highest-risk sources → "
-           "highest-vulnerability (CDC SVI) counties.")
+# ---------------------------------------------------------------------------
+# Equity impact: food safety -> food security
+# ---------------------------------------------------------------------------
+st.header("Equity impact: from food safety to food security")
+st.markdown(
+    "When a surge is flagged, the at-risk raw poultry does not have to be thrown "
+    "away. A validated heat kill-step makes it safe, and the cooked protein can go "
+    "to food banks serving the communities most exposed to food insecurity and "
+    "foodborne illness: older adults, children, people with disabilities or "
+    "without health insurance, and households in poverty.")
 
-svi = load_svi()
-risk_by_state = {k[0]: posteriors[k]["posterior_mean"] for k in posteriors}
-if not risk_by_state:
-    risk_by_state = {"CA": national[month_sel], "TX": national[month_sel]}
-vectors = routing.donate_routing_vectors(risk_by_state, svi)
+donate_on = rec.scenario == "Donate Cooked Product"
+cook_on = rec.scenario in ("Donate Cooked Product", "Divert to Cooked Lines")
+s1, s2, s3 = st.columns(3)
+with s1.container(border=True):
+    st.markdown(f"**1 · Detect** {'✅' if tier.label != 'BASELINE' else '⏸️'}")
+    st.caption(f"Surge probability for {loc_name} in {MONTHS[month]}: "
+               f"{p_surge:.0%} ({tier.label.lower()}).")
+with s2.container(border=True):
+    st.markdown(f"**2 · Neutralize** {'✅' if cook_on else '⏸️'}")
+    st.caption("Heat kill-step on the at-risk lots." if cook_on
+               else "Not triggered at this risk level.")
+with s3.container(border=True):
+    st.markdown(f"**3 · Deliver** {'✅' if donate_on else '⏸️'}")
+    st.caption("Route cooked protein to food banks in the counties listed below."
+               if donate_on else
+               "On standby. The counties below are where donations would go if a "
+               "surge triggers.")
 
-map_col, manifest_col = st.columns([2, 1])
+if state is None:
+    st.info("Select a facility region above to see the high-vulnerability "
+            "counties within its service radius and plan donation routes.")
+else:
+    targets = decision.donation_targets(need)
+    n1, n2, n3, n4 = st.columns(4)
+    n1.metric(f"High-vulnerability counties within {decision.SERVICE_RADIUS_MI} mi",
+              f"{len(need.high_need)} of {len(need.nearby)}",
+              help=f"Counties with overall CDC SVI ≥ {decision.HIGH_VULN_SVI}.")
+    n2.metric("Residents in those counties", f"{need.population / 1e6:.1f} M")
+    n3.metric("Adults 65+", f"{need.seniors / 1e6:.2f} M")
+    n4.metric("Children 17 and under", f"{need.children / 1e6:.2f} M")
 
-with map_col:
-    try:
+    if need.share_high >= decision.HIGH_NEED_SHARE:
+        st.caption(f"Local need is high: {need.share_high:.0%} of nearby counties are "
+                   f"high-vulnerability, so a surge here routes product to donation.")
+    else:
+        st.caption(f"Local need is moderate: {need.share_high:.0%} of nearby counties "
+                   f"are high-vulnerability (donation triggers at "
+                   f"{decision.HIGH_NEED_SHARE:.0%}), so a surge here diverts product "
+                   f"to cooked lines.")
+
+    map_col, list_col = st.columns([3, 2])
+    with map_col:
         import folium
         from streamlit_folium import st_folium
-        m = folium.Map(location=[39.5, -98.35], zoom_start=4,
-                       tiles="OpenStreetMap")
-        hv = routing.high_vulnerability_counties(svi).head(60)
-        for row in hv.itertuples(index=False):
-            lat, lon = routing.STATE_CENTROIDS.get(row.state, routing.US_CENTER)
+
+        flat, flon = need.facility
+        fmap = folium.Map(location=[flat, flon], zoom_start=6, tiles="OpenStreetMap")
+        folium.Circle([flat, flon], radius=decision.SERVICE_RADIUS_MI * 1609.34,
+                      color="#4a148c", weight=1, fill=False,
+                      tooltip=f"{decision.SERVICE_RADIUS_MI}-mile service radius").add_to(fmap)
+
+        def _svi_color(v: float) -> str:
+            if v >= 0.75:
+                return "#7b1fa2"
+            if v >= 0.5:
+                return "#ba68c8"
+            if v >= 0.25:
+                return "#e1bee7"
+            return "#f3e5f5"
+
+        for r in need.nearby.itertuples(index=False):
             folium.CircleMarker(
-                location=[lat, lon], radius=3 + 6 * float(row.svi_overall),
-                color="#6a1b9a", fill=True, fill_opacity=0.5,
-                tooltip=f"{row.county}, {row.state} — SVI {row.svi_overall:.2f}",
-            ).add_to(m)
-        for v in vectors.itertuples(index=False):
+                [r.lat, r.lon], radius=4 if r.svi_overall < 0.75 else 6,
+                color=_svi_color(r.svi_overall), fill=True, fill_opacity=0.8, weight=1,
+                tooltip=f"{r.county}, {r.state} · SVI {r.svi_overall:.2f}",
+            ).add_to(fmap)
+        for r in targets.itertuples(index=False):
             folium.PolyLine(
-                locations=[[v.src_lat, v.src_lon], [v.tgt_lat, v.tgt_lon]],
-                color="#d84315", weight=2 + 3 * float(v.source_risk), opacity=0.7,
-                tooltip=(f"Donate: {v.source_state} → {v.target_county}, "
-                         f"{v.target_state} (SVI {v.target_svi:.2f})"),
-            ).add_to(m)
-            folium.CircleMarker(
-                location=[v.src_lat, v.src_lon], radius=6, color="#d84315",
-                fill=True, fill_opacity=0.9,
-                tooltip=f"Source: {v.source_state} risk {v.source_risk:.2f}",
-            ).add_to(m)
-        st_folium(m, height=460, width="100%")
-    except Exception:
-        import plotly.graph_objects as go
-        fig = go.Figure()
-        cs = svi.groupby("state")["svi_overall"].mean().reset_index()
-        fig.add_trace(go.Choropleth(
-            locations=cs["state"], locationmode="USA-states",
-            z=cs["svi_overall"], colorscale="Purples",
-            colorbar=dict(title="mean SVI")))
-        for v in vectors.itertuples(index=False):
-            fig.add_trace(go.Scattergeo(
-                lon=[v.src_lon, v.tgt_lon], lat=[v.src_lat, v.tgt_lat],
-                mode="lines", line=dict(width=2, color="#d84315"),
-                opacity=0.7, showlegend=False))
-        fig.update_layout(geo=dict(scope="usa"), height=460,
-                          margin=dict(l=0, r=0, t=0, b=0))
-        st.plotly_chart(fig, width="stretch")
+                [[flat, flon], [r.lat, r.lon]],
+                color="#d84315" if donate_on else "#9e9e9e",
+                weight=3 if donate_on else 2,
+                dash_array=None if donate_on else "6 6", opacity=0.85,
+                tooltip=f"{'Donation route' if donate_on else 'Standby route'} → "
+                        f"{r.county}, {r.state}",
+            ).add_to(fmap)
+        folium.Marker([flat, flon], tooltip=f"Facility region: {loc_name}",
+                      icon=folium.Icon(color="red", icon="industry", prefix="fa")).add_to(fmap)
+        st_folium(fmap, height=480, width="100%", returned_objects=[])
+        st.caption("Dots: counties within the service radius, darker = more "
+                   "vulnerable (CDC SVI). Lines: donation routes to the highest-need "
+                   "counties — solid when donation is active, dashed on standby. "
+                   "Facility shown at the state center.")
 
-with manifest_col:
-    st.markdown("**Logistics manifest**")
-    st.caption("Donate Cooked Product targets (high-SVI counties)")
-    manifest = vectors[["target_county", "target_state", "target_svi",
-                        "source_state"]].copy()
-    manifest.columns = ["Target county", "ST", "SVI", "From"]
-    manifest["SVI"] = manifest["SVI"].map(lambda x: f"{x:.2f}")
-    st.dataframe(manifest, height=420, hide_index=True, width="stretch")
+    with list_col:
+        st.markdown("**Donation manifest — highest-need counties**")
+        manifest = pd.DataFrame({
+            "County": targets["county"] + ", " + targets["state"],
+            "Miles": targets["distance_mi"].round(0),
+            "SVI": targets["svi_overall"],
+            "Adults 65+": targets["seniors_65"],
+            "Children ≤17": targets["children_17"],
+            "Below 150% poverty %": targets["pct_pov150"],
+            "Disability %": targets["pct_disabled"],
+            "Uninsured %": targets["pct_uninsured"],
+        })
+        st.dataframe(
+            manifest, hide_index=True, width="stretch", height=420,
+            column_config={
+                "Miles": st.column_config.NumberColumn(format="%d"),
+                "SVI": st.column_config.ProgressColumn(min_value=0, max_value=1, format="%.2f"),
+                "Adults 65+": st.column_config.NumberColumn(format="%d"),
+                "Children ≤17": st.column_config.NumberColumn(format="%d"),
+                "Below 150% poverty %": st.column_config.NumberColumn(format="%.1f"),
+                "Disability %": st.column_config.NumberColumn(format="%.1f"),
+                "Uninsured %": st.column_config.NumberColumn(format="%.1f"),
+            },
+        )
+        st.caption("Source: CDC/ATSDR SVI 2022, Census county locations. SVI does "
+                   "not measure immunocompromise or malnutrition directly; disability, "
+                   "uninsured, and poverty rates are the closest published proxies.")
 
 
-# ===========================================================================
-# DECISION RECORD — Accept / Override + audit log
-# ===========================================================================
-st.markdown("## Decision Record")
-st.caption("Log the action taken. Overrides require a reason — this is the "
-           "cheapest model evaluation your team will run.")
+# ---------------------------------------------------------------------------
+# Decision record
+# ---------------------------------------------------------------------------
+if "audit_log" not in st.session_state:
+    st.session_state.audit_log = []
 
-dr1, dr2, dr3 = st.columns([1, 1, 1.4])
-with dr1:
-    st.markdown(f"System recommends: **{rec_name}**")
+st.header("Decision record")
+st.caption("Log what the plant did. Overrides need a reason, which gives the team "
+           "a record of where people and the model disagree.")
+scenario_names = [s.name for s in routing.ROUTING_SCENARIOS]
+d1, d2, d3 = st.columns([1, 1, 1.4])
+with d1:
+    st.markdown(f"System recommends: **{rec.scenario}**")
     accept = st.button("✅ Accept recommendation", width="stretch")
-with dr2:
-    override_choice = st.selectbox(
-        "Override with", [s.name for s in routing.ROUTING_SCENARIOS],
-        index=[s.name for s in routing.ROUTING_SCENARIOS].index(rec_name),
-    )
-with dr3:
-    reason = st.text_input("Reason code (required to override)",
-                           placeholder="e.g. line capacity, supplier contract…")
+with d2:
+    override_choice = st.selectbox("Override with", scenario_names,
+                                   index=scenario_names.index(rec.scenario))
+with d3:
+    reason = st.text_input("Reason (required to override)",
+                           placeholder="e.g. line capacity, supplier contract")
     override = st.button("✏️ Record override", width="stretch")
 
 
-def _log(action: str, chosen: str, reason_txt: str):
+def _log(action: str, chosen: str, why: str) -> None:
     st.session_state.audit_log.append({
-        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "location": loc_name, "month": MONTH_NAMES[month_sel],
-        "tau_in_force": round(tau, 2),
-        "surge_probability": round(pm, 4),
-        "risk_tier": tier_label,
-        "system_recommended": rec_name,
-        "action": action, "human_choice": chosen,
-        "reason": reason_txt,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "region": "US" if state is None else state, "month": MONTHS[month],
+        "surge_threshold": round(normal_level, 4),
+        "surge_probability": round(p_surge, 4), "risk_level": tier.label,
+        "system_recommended": rec.scenario, "action": action,
+        "final_choice": chosen, "reason": why,
     })
 
 
 if accept:
-    _log("accept", rec_name, "")
-    st.success(f"Logged: accepted **{rec_name}**.")
+    _log("accept", rec.scenario, "")
+    st.success(f"Logged: accepted {rec.scenario}.")
 if override:
-    if override_choice == rec_name:
-        st.warning("Override choice matches the recommendation — pick a "
-                   "different scenario, or use Accept.")
+    if override_choice == rec.scenario:
+        st.warning("That matches the recommendation. Pick a different scenario or "
+                   "use Accept.")
     elif not reason.strip():
-        st.error("A reason code is required to override the recommendation.")
+        st.error("Enter a reason to record an override.")
     else:
         _log("override", override_choice, reason.strip())
-        st.success(f"Logged: overrode to **{override_choice}** — {reason.strip()}")
+        st.success(f"Logged: override to {override_choice} — {reason.strip()}")
 
 if st.session_state.audit_log:
     log_df = pd.DataFrame(st.session_state.audit_log)
-    with st.expander(f"📜 Decision audit log ({len(log_df)} entries)", expanded=False):
+    with st.expander(f"📜 Decision log ({len(log_df)} entries)"):
         st.dataframe(log_df, width="stretch", hide_index=True)
-        st.download_button(
-            "⬇ Download audit log (CSV)",
-            data=log_df.to_csv(index=False).encode("utf-8"),
-            file_name="early_signal_decision_log.csv", mime="text/csv",
-        )
-    st.caption("Note: this log lives in your browser session. A production "
-               "deployment would persist it to a database.")
+        st.download_button("⬇ Download log (CSV)",
+                           data=log_df.to_csv(index=False).encode("utf-8"),
+                           file_name="early_signal_decision_log.csv", mime="text/csv")
+    st.caption("The log is kept for this browser session. A production deployment "
+               "would store it in a database.")
 
 
-# ===========================================================================
-# DETAILED DIAGNOSTICS — progressive disclosure (Layer 2)
-# ===========================================================================
-st.markdown("## ")
-with st.expander("🔬 View Detailed Diagnostics (for data scientists & judges)"):
-    st.markdown("### The statistics behind the recommendation")
-
-    d1, d2 = st.columns(2)
-    with d1:
-        st.markdown("**Bayesian risk model (Step 4)**")
-        if not is_baseline:
-            st.markdown(
-                f"- Prior: `Beta(α₀={cell['prior_alpha']:.2f}, "
-                f"β₀={cell['prior_beta']:.2f})` from NORS history\n"
-                f"- FSIS evidence: `{cell['k']}` positive of `{cell['n']}` tested\n"
-                f"- Posterior: `Beta(α={cell['alpha']:.2f}, β={cell['beta']:.2f})`\n"
-                f"- Posterior mean E[w|𝒟] = **{pm:.4f}**\n"
-                f"- P(w > τ={tau:.2f}) = **{p_exceeds:.4f}**"
-            )
-        else:
-            st.markdown(
-                f"- National seasonal prior mean for {MONTH_NAMES[month_sel]} = "
-                f"**{pm:.4f}**\n- Select a facility/region cell to see the full "
-                f"Bayesian update with FSIS evidence."
-            )
-        st.latex(r"p(w\mid\mathcal{D})=\frac{p(\mathcal{D}\mid w)\,p(w)}{p(\mathcal{D})}"
-                 r"=\mathrm{Beta}(\alpha_0+k,\ \beta_0+n-k)")
-
-    with d2:
-        st.markdown("**Seasonal prior curve (NORS)**")
-        season_df = pd.DataFrame({
-            "month": [MONTH_NAMES[m][:3] for m in range(1, 13)],
-            "prior risk": [national[m] for m in range(1, 13)],
-        }).set_index("month")
-        st.bar_chart(season_df, height=220)
-
-    st.markdown("**Decision rule**")
+# ---------------------------------------------------------------------------
+# Detailed diagnostics (opt-in)
+# ---------------------------------------------------------------------------
+with st.expander("🔬 Detailed diagnostics (for data scientists and judges)"):
+    st.markdown("**Bayesian risk model**")
+    st.latex(r"p(w\mid\mathcal{D})=\frac{p(\mathcal{D}\mid w)\,p(w)}{p(\mathcal{D})}"
+             r"=\mathrm{Beta}(\alpha_0+k,\ \beta_0+n-k)")
     st.markdown(
-        f"The recommended action is chosen automatically: the actionable signal "
-        f"is P(risk > τ) = "
-        f"{'%.3f' % p_exceeds if p_exceeds is not None else 'n/a (baseline, uses posterior mean)'}, "
-        f"mapped to tiers (≥0.50 → Divert to Cooked Lines; ≥0.20 → Enhanced "
-        f"Interventions; else → Adjust Transit Radii)."
-    )
+        f"- Prior from NORS: Beta({post.prior_alpha:.2f}, {post.prior_beta:.2f})"
+        f"{'' if has_local else ' (national seasonal prior; little local history)'}\n"
+        f"- FSIS evidence: {fsis_k} positive of {fsis_n} tested\n"
+        f"- Posterior: Beta({post.alpha:.2f}, {post.beta:.2f}), "
+        f"mean E[w|D] = {risk:.4f}\n"
+        f"- Surge threshold τ = normal yearly level = {normal_level:.4f} "
+        f"(mean of the 12 national monthly priors)\n"
+        f"- Surge probability P(w > τ | D) = {p_surge:.4f}")
 
-    # Link to the pre-rendered SHAP / math figures if present in docs/figures.
+    st.markdown("**Where each action is recommended (all regions × months)**")
+    scan = scan_recommendations()
+    counts = scan["action"].value_counts().reindex(scenario_names, fill_value=0)
+    st.dataframe(counts.rename("region-months").to_frame(), width="content")
+    donate_cells = scan[scan["action"] == "Donate Cooked Product"].copy()
+    if not donate_cells.empty:
+        donate_cells["region-month"] = donate_cells.apply(
+            lambda r: f"{r['state']} {MONTHS[int(r['month'])][:3]}", axis=1)
+        st.caption("Donate Cooked Product is recommended in: " +
+                   ", ".join(donate_cells.sort_values(["month", "state"])["region-month"]))
+
+    st.markdown("**Seasonal prior (national)**")
+    st.bar_chart(pd.DataFrame({"prior risk": [national[m].prior_mean for m in range(1, 13)]},
+                              index=[MONTHS[m][:3] for m in range(1, 13)]), height=200)
+
     figdir = PROJECT_ROOT / "docs" / "figures"
-    shap_imgs = {
-        "SHAP feature importance (is_salmonella)": "summary_is_salmonella.png"
-        if (PROJECT_ROOT / "artifacts" / "shap" / "summary_is_salmonella.png").exists()
-        else None,
-    }
-    st.markdown("**Explainability (SHAP, Step 3) & pipeline math**")
-    shown = False
     for label, fname in [
         ("Bayesian prior → posterior update", "step4_bayes_update.png"),
-        ("Expected-loss decision boundary (Step 5)", "step5_expected_loss_decision.png"),
-        ("Severe-serotype recall improvement (Step 5)", "step5_severe_recall.png"),
-        ("SHAP feature importance (Step 3)", "summary_is_salmonella.png"),
+        ("Expected-loss decision boundary", "step5_expected_loss_decision.png"),
+        ("Severe-serotype recall", "step5_severe_recall.png"),
+        ("OOF calibration (is_salmonella)", "step3_oof_calibration_is_salmonella.png"),
     ]:
-        p = figdir / fname
-        alt = (PROJECT_ROOT / "artifacts" / "shap" / fname)
-        src = p if p.exists() else (alt if alt.exists() else None)
-        if src is not None:
-            st.image(str(src), caption=label, width="stretch")
-            shown = True
-    if not shown:
-        st.info("Run `python -m src.figures` to generate the diagnostic figures.")
-
+        if (figdir / fname).exists():
+            st.image(str(figdir / fname), caption=label, width="stretch")
 
 st.divider()
 st.caption("Early Signal · NORS/FSIS ingestion → leakage-safe preprocessing → "

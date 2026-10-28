@@ -76,7 +76,22 @@ for the required variable names.
 ## Data sources
 
 CDC NORS · FSIS RTE Laboratory Sampling · CDC/ATSDR SVI · CDC BEAM Dashboard ·
-FSIS NARMS Multi-Year Report · NOAA GHCND · USDA NASS/AMS · U.S. Census.
+FSIS NARMS Multi-Year Report · NOAA GHCND · USDA NASS/AMS · U.S. Census
+(including the 2023 Gazetteer county locations in `data/county_centroids_2023.csv`).
+
+## How the dashboard decides
+
+- **Surge threshold (automatic):** a surge means Salmonella risk above the
+  normal yearly level from CDC NORS history (about 15%). Surge probability is
+  the chance, under the Bayesian model, that a region's risk this month is above
+  that level. It rises and falls with the season on its own.
+- **Action:** surge probability ≥ 75% and ≥ 30% of counties within 250 miles
+  are high-vulnerability (CDC SVI ≥ 0.75) → Donate Cooked Product; ≥ 75% →
+  Divert to Cooked Lines; ≥ 40% → Trigger Enhanced Interventions; otherwise →
+  Adjust Transit Radii.
+- **Equity routing:** when product is cooked for donation, the map routes it
+  to the highest-need counties in the service radius, with counts of older
+  adults and children plus disability, uninsured, and poverty rates.
 
 > **Note on scope.** The public FSIS RTE file is a 20-row *sample* with no
 > serotype/AMR signal, so the modeling substrate is CDC NORS (which is rich);

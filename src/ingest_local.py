@@ -435,10 +435,48 @@ def load_svi_all(normalized: bool = True) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
+def load_svi_vulnerability(year: int = 2022) -> pd.DataFrame:
+    """County-level vulnerable-population profile for the equity map.
+
+    Joins the ATSDR SVI estimates that describe the groups the donation
+    routing is meant to protect with Census county centroids (lat/lon):
+
+      population      E_TOTPOP   total residents
+      pct_age65       EP_AGE65   % aged 65+                  (elderly)
+      pct_age17       EP_AGE17   % aged 17 and younger       (children)
+      pct_disabled    EP_DISABL  % with a disability         (medical-vulnerability proxy)
+      pct_uninsured   EP_UNINSUR % without health insurance  (medical-access proxy)
+      pct_pov150      EP_POV150  % below 150% of poverty     (food-insecurity proxy)
+      svi_overall     RPL_THEMES overall SVI percentile (0-1)
+
+    SVI does not measure immunocompromise or malnutrition directly; disability,
+    uninsured, and poverty are the closest published proxies.
+    """
+    raw = load_svi(year, normalized=False)
+    cols = {"E_TOTPOP": "population", "EP_AGE65": "pct_age65",
+            "EP_AGE17": "pct_age17", "EP_DISABL": "pct_disabled",
+            "EP_UNINSUR": "pct_uninsured", "EP_POV150": "pct_pov150",
+            "RPL_THEMES": "svi_overall"}
+    present = {k: v for k, v in cols.items() if k in raw.columns}
+    df = raw[["FIPS", "ST_ABBR", "COUNTY"] + list(present)].rename(
+        columns={"ST_ABBR": "state", "COUNTY": "county", **present})
+    df["FIPS"] = df["FIPS"].astype("string").str.replace(r"\.0$", "", regex=True).str.zfill(5)
+    for c in present.values():
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+        df.loc[df[c] == config.SVI_MISSING_SENTINEL, c] = pd.NA
+        df[c] = df[c].astype("float64")
+
+    cent = pd.read_csv(config.COUNTY_CENTROIDS_CSV, dtype={"FIPS": str})
+    cent["FIPS"] = cent["FIPS"].str.zfill(5)
+    df = df.merge(cent[["FIPS", "lat", "lon"]], on="FIPS", how="inner")
+    return df.dropna(subset=["svi_overall", "lat", "lon"]).reset_index(drop=True)
+
+
 __all__ = [
     "FSISTables",
     "POULTRY_KEYWORDS",
     "SVI_NORMALIZED_COLUMNS",
+    "load_svi_vulnerability",
     "load_fsis",
     "load_fsis_primary_secondary",
     "join_on_form_id",
