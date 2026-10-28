@@ -283,66 +283,167 @@ else:
     map_col, list_col = st.columns([3, 2])
     with map_col:
         import folium
+        from folium.plugins import AntPath, PolyLineTextPath
         from streamlit_folium import st_folium
 
         flat, flon = need.facility
+        route_color = "#d84315" if donate_on else "#757575"
+
+        # --- Legend (dynamic: counts and route status follow the selection) ---
+        class_counts = {label: 0 for _, label, _ in decision.SVI_CLASSES}
+        for v in need.nearby["svi_overall"]:
+            class_counts[decision.svi_class(v)[0]] += 1
+        swatches = "".join(
+            f'<div style="display:flex;align-items:center;gap:6px;margin:2px 0;">'
+            f'<span style="width:12px;height:12px;border-radius:50%;background:{color};'
+            f'border:1px solid #888;display:inline-block;"></span>'
+            f'<span>{label} — {class_counts[label]} counties</span></div>'
+            for _, label, color in decision.SVI_CLASSES
+        )
+        route_line = (
+            f'<span style="display:inline-block;width:28px;border-top:3px solid {route_color};'
+            f'{"" if donate_on else "border-top-style:dashed;"}vertical-align:middle;"></span>')
+        status = ("Donation <b>active</b> — moving dashes show product flowing out "
+                  "to each county." if donate_on else
+                  "Donation on <b>standby</b> — routes are planned but not running. "
+                  "They switch on when the recommendation is Donate Cooked Product.")
+        st.html(f"""
+        <div style="font-family:sans-serif;font-size:13px;border:1px solid #e0d7e6;
+                    border-radius:8px;padding:8px 12px;background:#fff;">
+          <div style="display:flex;flex-wrap:wrap;gap:22px;">
+            <div>
+              <div style="font-weight:700;margin-bottom:3px;">County dots · CDC SVI vulnerability</div>
+              {swatches}
+              <div style="color:#666;font-size:12px;">Only counties within
+              {decision.SERVICE_RADIUS_MI} miles of the facility are shown.</div>
+            </div>
+            <div>
+              <div style="font-weight:700;margin-bottom:3px;">Logistics</div>
+              <div style="margin:2px 0;">🏭 Facility region ({loc_name}, at the state center)</div>
+              <div style="margin:2px 0;"><span style="display:inline-block;width:18px;height:18px;
+                   border-radius:50%;background:{route_color};color:#fff;text-align:center;
+                   font-size:11px;line-height:18px;font-weight:700;">1</span>
+                   Receiving county, numbered by delivery priority (matches the manifest)</div>
+              <div style="margin:2px 0;">{route_line} ➤ Route: runs <b>from</b> the facility
+                   <b>to</b> the county; arrows point the way product travels. Thicker = larger
+                   share of product.</div>
+              <div style="margin:2px 0;">◯ Dashed purple ring: {decision.SERVICE_RADIUS_MI}-mile service radius</div>
+              <div style="margin-top:4px;">{status}</div>
+            </div>
+          </div>
+        </div>""")
+
+        # --- Map ---
         fmap = folium.Map(location=[flat, flon], zoom_start=6, tiles="OpenStreetMap")
         folium.Circle([flat, flon], radius=decision.SERVICE_RADIUS_MI * 1609.34,
-                      color="#4a148c", weight=1, fill=False,
+                      color="#4a148c", weight=1.5, dash_array="6 6", fill=False,
                       tooltip=f"{decision.SERVICE_RADIUS_MI}-mile service radius").add_to(fmap)
 
-        def _svi_color(v: float) -> str:
-            if v >= 0.75:
-                return "#7b1fa2"
-            if v >= 0.5:
-                return "#ba68c8"
-            if v >= 0.25:
-                return "#e1bee7"
-            return "#f3e5f5"
-
+        target_fips = set(targets["FIPS"])
         for r in need.nearby.itertuples(index=False):
+            if r.FIPS in target_fips:
+                continue  # drawn below as numbered stops
+            label, color = decision.svi_class(r.svi_overall)
             folium.CircleMarker(
-                [r.lat, r.lon], radius=4 if r.svi_overall < 0.75 else 6,
-                color=_svi_color(r.svi_overall), fill=True, fill_opacity=0.8, weight=1,
-                tooltip=f"{r.county}, {r.state} · SVI {r.svi_overall:.2f}",
+                [r.lat, r.lon], radius=5 if r.svi_overall >= decision.HIGH_VULN_SVI else 3.5,
+                color="#666", weight=0.5, fill=True, fill_color=color, fill_opacity=0.9,
+                tooltip=(f"{r.county}, {r.state} · vulnerability percentile "
+                         f"{r.svi_overall * 100:.1f} ({label}) · "
+                         f"{r.distance_mi:.0f} mi · click for profile"),
             ).add_to(fmap)
+
         for r in targets.itertuples(index=False):
-            folium.PolyLine(
-                [[flat, flon], [r.lat, r.lon]],
-                color="#d84315" if donate_on else "#9e9e9e",
-                weight=3 if donate_on else 2,
-                dash_array=None if donate_on else "6 6", opacity=0.85,
-                tooltip=f"{'Donation route' if donate_on else 'Standby route'} → "
-                        f"{r.county}, {r.state}",
+            weight = 2 + 8 * float(r.allocation)
+            path = [[flat, flon], [r.lat, r.lon]]
+            tip = (f"#{r.priority} {r.county}, {r.state} · {r.allocation:.0%} of product · "
+                   f"{r.distance_mi:.0f} mi")
+            if donate_on:
+                line = AntPath(path, color=route_color, weight=weight, opacity=0.9,
+                               delay=900, dash_array=[12, 18], pulse_color="#ffffff",
+                               tooltip=tip)
+            else:
+                line = folium.PolyLine(path, color=route_color, weight=weight,
+                                       opacity=0.7, dash_array="8 8", tooltip=tip)
+            line.add_to(fmap)
+            PolyLineTextPath(line, "      ➤      ", repeat=True, offset=5,
+                             attributes={"fill": route_color, "font-size": "14",
+                                         "font-weight": "bold"}).add_to(fmap)
+            folium.Marker(
+                [r.lat, r.lon], tooltip=tip + " · click for profile",
+                icon=folium.DivIcon(
+                    icon_size=(24, 24), icon_anchor=(12, 12),
+                    html=(f'<div style="width:24px;height:24px;border-radius:50%;'
+                          f'background:{route_color};color:#fff;border:2px solid #fff;'
+                          f'box-shadow:0 0 3px rgba(0,0,0,.5);text-align:center;'
+                          f'line-height:20px;font:700 12px sans-serif;">{r.priority}</div>')),
             ).add_to(fmap)
+
         folium.Marker([flat, flon], tooltip=f"Facility region: {loc_name}",
                       icon=folium.Icon(color="red", icon="industry", prefix="fa")).add_to(fmap)
-        st_folium(fmap, height=480, width="100%", returned_objects=[])
-        st.caption("Dots: counties within the service radius, darker = more "
-                   "vulnerable (CDC SVI). Lines: donation routes to the highest-need "
-                   "counties — solid when donation is active, dashed on standby. "
-                   "Facility shown at the state center.")
+
+        clicked = st_folium(fmap, height=500, width="100%", key=f"equity_{state}",
+                            returned_objects=["last_object_clicked"])
+
+        # --- Click a county for its profile ---
+        pick = (clicked or {}).get("last_object_clicked")
+        if pick and pick.get("lat") is not None:
+            d = decision.haversine_mi(pick["lat"], pick["lng"],
+                                      need.nearby["lat"].to_numpy(),
+                                      need.nearby["lon"].to_numpy())
+            i = int(d.argmin())
+            if d[i] <= 15:
+                c = need.nearby.iloc[i]
+                tier_label, _ = decision.svi_class(c["svi_overall"])
+                with st.container(border=True):
+                    st.markdown(f"**{c['county']}, {c['state']}** · {c['distance_mi']:.0f} mi "
+                                f"from facility · {tier_label} vulnerability "
+                                f"(percentile {c['svi_overall'] * 100:.1f})")
+                    p1, p2, p3, p4, p5 = st.columns(5)
+                    p1.metric("Residents", f"{c['population']:,.0f}")
+                    p2.metric("Adults 65+", f"{c['pct_age65']:.1f}%")
+                    p3.metric("Children ≤17", f"{c['pct_age17']:.1f}%")
+                    p4.metric("Below 150% poverty", f"{c['pct_pov150']:.1f}%")
+                    p5.metric("Disability", f"{c['pct_disabled']:.1f}%")
+        else:
+            st.caption("Click any county on the map to see its population profile.")
 
     with list_col:
         st.markdown("**Donation manifest — highest-need counties**")
+        st.caption(
+            "**Vulnerability percentile** ranks each county against all ~3,100 U.S. "
+            "counties on the CDC Social Vulnerability Index. 99.5 means more "
+            "vulnerable than 99.5% of counties; 100 is the most vulnerable. 75 and "
+            "above counts as high. **Share of product** splits the donation by the "
+            "number of residents below 150% of the poverty line.")
         manifest = pd.DataFrame({
+            "#": targets["priority"],
             "County": targets["county"] + ", " + targets["state"],
             "Miles": targets["distance_mi"].round(0),
-            "SVI": targets["svi_overall"],
+            "Vulnerability percentile": targets["svi_percentile"],
+            "Share of product": targets["allocation"] * 100,
+            "Residents below 150% poverty": targets["people_in_need"],
             "Adults 65+": targets["seniors_65"],
             "Children ≤17": targets["children_17"],
-            "Below 150% poverty %": targets["pct_pov150"],
             "Disability %": targets["pct_disabled"],
             "Uninsured %": targets["pct_uninsured"],
         })
         st.dataframe(
             manifest, hide_index=True, width="stretch", height=420,
             column_config={
-                "Miles": st.column_config.NumberColumn(format="%d"),
-                "SVI": st.column_config.ProgressColumn(min_value=0, max_value=1, format="%.2f"),
+                "#": st.column_config.NumberColumn(help="Delivery priority; matches the "
+                                                        "numbered stops on the map.", width="small"),
+                "Miles": st.column_config.NumberColumn(format="%d",
+                                                       help="Straight-line distance from the facility region."),
+                "Vulnerability percentile": st.column_config.ProgressColumn(
+                    min_value=0, max_value=100, format="%.1f",
+                    help="CDC SVI national percentile rank. 100 = most vulnerable county "
+                         "in the U.S.; 75+ = high vulnerability."),
+                "Share of product": st.column_config.ProgressColumn(
+                    min_value=0, max_value=100, format="%.0f%%",
+                    help="Portion of the donated cooked product routed to this county."),
+                "Residents below 150% poverty": st.column_config.NumberColumn(format="%d"),
                 "Adults 65+": st.column_config.NumberColumn(format="%d"),
                 "Children ≤17": st.column_config.NumberColumn(format="%d"),
-                "Below 150% poverty %": st.column_config.NumberColumn(format="%.1f"),
                 "Disability %": st.column_config.NumberColumn(format="%.1f"),
                 "Uninsured %": st.column_config.NumberColumn(format="%.1f"),
             },

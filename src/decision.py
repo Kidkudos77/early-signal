@@ -100,13 +100,46 @@ def local_need(state: str, vuln: pd.DataFrame,
                      population=float(high["population"].sum()))
 
 
+# SVI vulnerability classes used on the map and in the manifest. RPL_THEMES is
+# a national percentile rank: 0.95 means the county is more vulnerable than 95%
+# of U.S. counties; 1.00 is the most vulnerable.
+SVI_CLASSES = (
+    # (min SVI, label, color)
+    (0.90, "Very high (top 10%)", "#4a148c"),
+    (0.75, "High (top 25%)", "#8e24aa"),
+    (0.50, "Moderate", "#ce93d8"),
+    (0.00, "Lower", "#ede7f6"),
+)
+
+
+def svi_class(svi: float) -> tuple[str, str]:
+    """(label, color) for an SVI percentile."""
+    for lo, label, color in SVI_CLASSES:
+        if svi >= lo:
+            return label, color
+    return SVI_CLASSES[-1][1], SVI_CLASSES[-1][2]
+
+
 def donation_targets(need: LocalNeed, n: int = MAX_ROUTES) -> pd.DataFrame:
-    """Highest-need counties in the radius, most vulnerable first."""
+    """Highest-need counties in the radius, most vulnerable first.
+
+    Each target gets a priority number (1 = deliver first) and a share of the
+    donated product. Shares are proportional to residents below 150% of the
+    poverty line, the SVI measure closest to food insecurity, so larger
+    food-insecure populations receive more.
+    """
     hv = need.high_need.sort_values(["svi_overall", "distance_mi"],
                                     ascending=[False, True]).head(n).copy()
     hv["seniors_65"] = (hv["population"] * hv["pct_age65"] / 100).round()
     hv["children_17"] = (hv["population"] * hv["pct_age17"] / 100).round()
-    return hv
+    in_need = (hv["population"] * hv["pct_pov150"].fillna(0) / 100)
+    total = in_need.sum()
+    hv["people_in_need"] = in_need.round()
+    hv["allocation"] = in_need / total if total > 0 else 1.0 / max(len(hv), 1)
+    hv["svi_percentile"] = (hv["svi_overall"] * 100).round(1)
+    hv["svi_tier"] = hv["svi_overall"].map(lambda v: svi_class(v)[0])
+    hv.insert(0, "priority", range(1, len(hv) + 1))
+    return hv.reset_index(drop=True)
 
 
 # ---------------------------------------------------------------------------
@@ -190,5 +223,6 @@ __all__ = [
     "SERVICE_RADIUS_MI", "HIGH_VULN_SVI", "HIGH_SURGE", "ELEVATED_SURGE",
     "HIGH_NEED_SHARE", "MONTHS", "PEAK_MONTHS",
     "Tier", "risk_tier", "LocalNeed", "local_need", "donation_targets",
+    "SVI_CLASSES", "svi_class",
     "Recommendation", "recommend", "headline", "drivers", "haversine_mi",
 ]
