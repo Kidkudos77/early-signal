@@ -1,0 +1,37 @@
+# Early Signal — SENS-D pipeline dependencies
+# Target runtime: Python 3.14
+# Install:  python -m pip install -r requirements.txt
+#
+# Lower bounds reflect the first releases that ship Python 3.14 wheels
+# (pandas >=2.3.3, scikit-learn >=1.9, numpy >=2.4). pip resolves the
+# latest compatible build for this interpreter.
+
+# Core data
+pandas>=2.3.3
+numpy>=2.4
+openpyxl>=3.1.5           # .xlsx reading (NORS workbooks)
+
+# HTTP / API access (NOAA, Census, NASS, AMS, CDC Socrata)
+requests>=2.32
+python-dotenv>=1.0.1      # load credentials from .env via os.getenv()
+
+# Modeling + explainability
+scikit-learn>=1.9
+xgboost>=3.4             # gradient-boosted trees: sample_weight (Step 5) + SHAP
+shap>=0.46
+matplotlib>=3.9          # SHAP force/summary plot rendering
+
+# Dashboard UI
+streamlit>=1.39
+
+# Bayesian + statistics (Step 4 conjugate model, Step 6 correlations)
+scipy>=1.14
+
+# Geospatial / mapping (Equity Impact Map)
+folium>=0.17
+plotly>=5.24
+streamlit-folium>=0.21   # interactive Folium maps embedded in Streamlit
+
+# Notebook support
+jupyter>=1.1
+ipykernel>=6.29

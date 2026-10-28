@@ -1,0 +1,23 @@
+# Secrets — never commit real credentials
+.env
+.env.*
+!.env.examples
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# Data caches / API pulls (large, regenerable)
+*.cache
+.cache/
+data_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Early Signal — RTE Poultry Salmonella Surge Decision Support</title>
+<style>
+  :root { --accent:#d84315; --purple:#6a1b9a; --bg:#faf7fb; --ink:#1a1a1a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,Segoe UI,Roboto,sans-serif;
+          color:var(--ink); background:var(--bg); line-height:1.5; }
+  header { background:linear-gradient(135deg,#d84315,#6a1b9a); color:#fff;
+            padding:2.5rem 1.5rem; }
+  header h1 { margin:0 0 .3rem; font-size:1.9rem; }
+  header p { margin:0; opacity:.92; max-width:60ch; }
+  main { max-width:1000px; margin:0 auto; padding:1.5rem; }
+  section { background:#fff; border-radius:12px; padding:1.4rem 1.6rem;
+             margin:1.2rem 0; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  h2 { margin-top:0; color:var(--accent); font-size:1.3rem; }
+  .cta { display:inline-block; background:#fff; color:var(--accent);
+          font-weight:700; padding:.7rem 1.2rem; border-radius:8px;
+          text-decoration:none; margin-top:1rem; }
+  .cta.disabled { background:rgba(255,255,255,.2); color:#fff; }
+  table { border-collapse:collapse; width:100%; margin-top:.6rem; }
+  th,td { text-align:left; padding:.55rem .7rem; border-bottom:1px solid #eee; }
+  th { background:#f5f0f6; }
+  .metric { display:inline-block; margin:.3rem 1.4rem .3rem 0; }
+  .metric .big { font-size:2rem; font-weight:800; color:var(--accent); }
+  .metric .cap { font-size:.85rem; color:#666; }
+  .bar { display:flex; align-items:center; gap:.5rem; margin:.15rem 0; }
+  .bar .lbl { width:2.4rem; font-size:.8rem; color:#555; }
+  .bar .fill { height:14px; background:var(--accent); border-radius:3px; }
+  .bar .val { font-size:.78rem; color:#555; }
+  iframe { width:100%; height:520px; border:1px solid #e3dbe6; border-radius:8px; }
+  .note { font-size:.85rem; color:#666; }
+  footer { text-align:center; color:#888; font-size:.8rem; padding:2rem; }
+  code { background:#f0ebf2; padding:.1rem .35rem; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🐔 Early Signal</h1>
+  <p>Proactive, time-aware decision support that predicts seasonal
+  <i>Salmonella</i> surges in FSIS-regulated Ready-to-Eat poultry and
+  recommends operational interventions. NAFSI SENS-D, Track 3.</p>
+  <span class="cta disabled">Live app URL not set — deploy on Streamlit Community Cloud and rebuild</span>
+  <p class="note" style="margin-top:1rem;color:#ffe;">This page is a static
+  snapshot of pre-computed results. The button above opens the full
+  interactive app (live sidebar controls, adjustable alert threshold).</p>
+</header>
+<main>
+
+  <section>
+    <h2>1 · Surge Alert Header</h2>
+    <p>Bayesian posterior probability of a Salmonella spike, per (state ×
+    month) cell. Historical CDC NORS outbreaks form the prior; incoming FSIS
+    supply-chain samples update it via Bayes' theorem.</p>
+    <div class="metric"><div class="big">25%</div>
+      <div class="cap">National peak-season risk (July)</div></div>
+    <h3 style="font-size:1rem;">National seasonal baseline risk</h3>
+    <div class="bar"><span class="lbl">Jan</span><span class="fill" style="width:31%"></span><span class="val">8%</span></div>
+<div class="bar"><span class="lbl">Feb</span><span class="fill" style="width:37%"></span><span class="val">9%</span></div>
+<div class="bar"><span class="lbl">Mar</span><span class="fill" style="width:34%"></span><span class="val">8%</span></div>
+<div class="bar"><span class="lbl">Apr</span><span class="fill" style="width:53%"></span><span class="val">13%</span></div>
+<div class="bar"><span class="lbl">May</span><span class="fill" style="width:53%"></span><span class="val">13%</span></div>
+<div class="bar"><span class="lbl">Jun</span><span class="fill" style="width:72%"></span><span class="val">18%</span></div>
+<div class="bar"><span class="lbl">Jul</span><span class="fill" style="width:100%"></span><span class="val">25%</span></div>
+<div class="bar"><span class="lbl">Aug</span><span class="fill" style="width:84%"></span><span class="val">21%</span></div>
+<div class="bar"><span class="lbl">Sep</span><span class="fill" style="width:92%"></span><span class="val">23%</span></div>
+<div class="bar"><span class="lbl">Oct</span><span class="fill" style="width:65%"></span><span class="val">16%</span></div>
+<div class="bar"><span class="lbl">Nov</span><span class="fill" style="width:61%"></span><span class="val">15%</span></div>
+<div class="bar"><span class="lbl">Dec</span><span class="fill" style="width:37%"></span><span class="val">9%</span></div>
+    <h3 style="font-size:1rem;margin-top:1rem;">FSIS poultry evidence cells
+    (posterior)</h3>
+    <table>
+      <tr><th>State</th><th>Month</th><th>Prior</th><th>Posterior</th>
+          <th>P(risk&gt;0.20)</th><th>FSIS k/n</th></tr>
+      <tr><td>CA</td><td>January</td><td>7.6%</td><td><b>7.2%</b></td><td>3.2%</td><td>0/1</td></tr>
+<tr><td>KY</td><td>December</td><td>12.2%</td><td><b>11.6%</b></td><td>11.9%</td><td>0/1</td></tr>
+<tr><td>MA</td><td>February</td><td>14.6%</td><td><b>13.9%</b></td><td>19.0%</td><td>0/1</td></tr>
+<tr><td>RI</td><td>November</td><td>9.4%</td><td><b>8.9%</b></td><td>5.8%</td><td>0/1</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>2 · Trade-Off Matrix</h2>
+    <p>Operational routing scenarios and their safety / protein / cost
+    trade-offs.</p>
+    <table><tr><th>Scenario</th><th>Safety</th><th>Protein Kept</th><th>Cost</th></tr><tr><td>Divert to Cooked Lines</td><td>High via Heat kill-step</td><td>100%</td><td>Moderate</td></tr>
+<tr><td>Adjust Transit Radii</td><td>Moderate</td><td>100%</td><td>Low</td></tr>
+<tr><td>Trigger Enhanced Interventions</td><td>Moderate via Antimicrobial washes</td><td>Variable</td><td>Low</td></tr>
+<tr><td>Donate Cooked Product</td><td>High</td><td>100%</td><td>High</td></tr></table>
+  </section>
+
+  <section>
+    <h2>3 · Equity Impact Map</h2>
+    <p>CDC/ATSDR Social Vulnerability Index (SVI) by county, overlaid with
+    <b>Donate Cooked Product</b> routing vectors from highest-risk states to
+    highest-vulnerability counties.</p>
+    <iframe src="equity_map.html" title="Equity Impact Map"></iframe>
+  </section>
+
+  <section>
+    <h2>Run it yourself</h2>
+    <p>Full interactive dashboard (live controls, API refresh):</p>
+    <p><code>streamlit run app/dashboard.py</code> locally, or use the live
+    app button at the top of this page.</p>
+    <p class="note">Pipeline: NORS/FSIS ingestion → leakage-safe preprocessing
+    → out-of-fold predictions + SHAP → sequential Bayesian risk → danger-weighted
+    optimization → BEAM/NARMS validation → this dashboard.</p>
+  </section>
+
+</main>
+<footer>Early Signal · static snapshot generated by <code>build_site.py</code></footer>
+</body>
+</html>

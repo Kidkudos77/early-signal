@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_ffde409599246acf183c2c1ef0093562 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_ffde409599246acf183c2c1ef0093562" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_ffde409599246acf183c2c1ef0093562 = L.map(
+                "map_ffde409599246acf183c2c1ef0093562",
+                {
+                    center: [39.5, -98.35],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 4,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_1014f4659c5698040434a807e4168fb7 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1014f4659c5698040434a807e4168fb7.addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            var circle_marker_f94c267195a3ffe27419796e0d17b6af = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.956199999999999, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_f94c267195a3ffe27419796e0d17b6af.bindTooltip(
+                `<div>
+                     Barbour County, AL — SVI 0.99
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0f8ed9abe2b71ac1887d6c337f7d4c9c = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.5134, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_0f8ed9abe2b71ac1887d6c337f7d4c9c.bindTooltip(
+                `<div>
+                     Dallas County, AL — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_048484fd30797d19dde88d50aa76deff = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4942, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_048484fd30797d19dde88d50aa76deff.bindTooltip(
+                `<div>
+                     Greene County, AL — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ca7df3f8601e646e3854f112d6bfaf0a = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4252, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_ca7df3f8601e646e3854f112d6bfaf0a.bindTooltip(
+                `<div>
+                     Lowndes County, AL — SVI 0.90
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1bfb3640421160ea642cbf98388615e9 = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.7936, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_1bfb3640421160ea642cbf98388615e9.bindTooltip(
+                `<div>
+                     Macon County, AL — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_30d7b9aef778c2d3c633da6296c46de8 = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.574, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_30d7b9aef778c2d3c633da6296c46de8.bindTooltip(
+                `<div>
+                     Montgomery County, AL — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0284821c0a9276c7c58442a5dd6d810c = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.5284, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_0284821c0a9276c7c58442a5dd6d810c.bindTooltip(
+                `<div>
+                     Perry County, AL — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1e3a45d91499c93bb8bc4ca51aaf5a5a = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.553, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_1e3a45d91499c93bb8bc4ca51aaf5a5a.bindTooltip(
+                `<div>
+                     Sumter County, AL — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4741760aee43f4bcc791f50b2d778963 = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.448, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_4741760aee43f4bcc791f50b2d778963.bindTooltip(
+                `<div>
+                     Talladega County, AL — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_165e468ba99811476585e6ea0019e06a = L.circleMarker(
+                [32.8, -86.8],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8914, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_165e468ba99811476585e6ea0019e06a.bindTooltip(
+                `<div>
+                     Wilcox County, AL — SVI 0.98
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c0b5d24cc87f819e47941667bdf4a124 = L.circleMarker(
+                [64.7, -152.0],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.654399999999999, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_c0b5d24cc87f819e47941667bdf4a124.bindTooltip(
+                `<div>
+                     Bethel Census Area, AK — SVI 0.94
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a7cde82678fe0512aa90a87068fcabb5 = L.circleMarker(
+                [34.3, -111.7],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.79, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_a7cde82678fe0512aa90a87068fcabb5.bindTooltip(
+                `<div>
+                     Apache County, AZ — SVI 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_708068b9d05430c4cd0c0f8237b7a041 = L.circleMarker(
+                [34.3, -111.7],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.594999999999999, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_708068b9d05430c4cd0c0f8237b7a041.bindTooltip(
+                `<div>
+                     Cochise County, AZ — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b186cc7b6a06d28b4dd86812f0eb365f = L.circleMarker(
+                [34.3, -111.7],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.517, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_b186cc7b6a06d28b4dd86812f0eb365f.bindTooltip(
+                `<div>
+                     La Paz County, AZ — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_16303a9df019280bdadb3c2461cc6c49 = L.circleMarker(
+                [34.3, -111.7],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.883600000000001, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_16303a9df019280bdadb3c2461cc6c49.bindTooltip(
+                `<div>
+                     Navajo County, AZ — SVI 0.98
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3b0a799eb6bd735ccbb929ac308ad45f = L.circleMarker(
+                [34.3, -111.7],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.6298, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_3b0a799eb6bd735ccbb929ac308ad45f.bindTooltip(
+                `<div>
+                     Santa Cruz County, AZ — SVI 0.94
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_58461033c91a1b7848e4c038d6518a28 = L.circleMarker(
+                [34.3, -111.7],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.9868, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_58461033c91a1b7848e4c038d6518a28.bindTooltip(
+                `<div>
+                     Yuma County, AZ — SVI 1.00
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d817b636190d6a1c69603de4f31cab33 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.9922, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_d817b636190d6a1c69603de4f31cab33.bindTooltip(
+                `<div>
+                     Chicot County, AR — SVI 1.00
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d76af7cdf9df1bd09fb8647ed89c1527 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.523, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_d76af7cdf9df1bd09fb8647ed89c1527.bindTooltip(
+                `<div>
+                     Crittenden County, AR — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_63cfb47a66556d3b8ae94fc40984c091 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.536200000000001, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_63cfb47a66556d3b8ae94fc40984c091.bindTooltip(
+                `<div>
+                     Cross County, AR — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6a1bebd35112186151d08edfcfa43bba = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8494, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_6a1bebd35112186151d08edfcfa43bba.bindTooltip(
+                `<div>
+                     Desha County, AR — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5bf3542e621d8b2c3514c2a20c27e720 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4576, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_5bf3542e621d8b2c3514c2a20c27e720.bindTooltip(
+                `<div>
+                     Jefferson County, AR — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f8ae9dddd23c28f0bb42c33899114819 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8284, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_f8ae9dddd23c28f0bb42c33899114819.bindTooltip(
+                `<div>
+                     Lee County, AR — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f4b1cd899186a6a726ce229e25df40fc = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.612400000000001, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_f4b1cd899186a6a726ce229e25df40fc.bindTooltip(
+                `<div>
+                     Miller County, AR — SVI 0.94
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d8d039cdb68ec051f8064ef6235b9904 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.600999999999999, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_d8d039cdb68ec051f8064ef6235b9904.bindTooltip(
+                `<div>
+                     Mississippi County, AR — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_918b422547762c6531f19bcf10a3790a = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.604600000000001, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_918b422547762c6531f19bcf10a3790a.bindTooltip(
+                `<div>
+                     Monroe County, AR — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2488b54d512050edf4d6d1efd88bec90 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.7768, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_2488b54d512050edf4d6d1efd88bec90.bindTooltip(
+                `<div>
+                     Phillips County, AR — SVI 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f09cc08e80bffb44e609266222822484 = L.circleMarker(
+                [34.9, -92.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8662, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_f09cc08e80bffb44e609266222822484.bindTooltip(
+                `<div>
+                     St. Francis County, AR — SVI 0.98
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a800eaac2247b463438b1dfad5fc47a0 = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4024, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_a800eaac2247b463438b1dfad5fc47a0.bindTooltip(
+                `<div>
+                     Del Norte County, CA — SVI 0.90
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5aaa5c07634346c3fdae885fce99d32b = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.7708, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_5aaa5c07634346c3fdae885fce99d32b.bindTooltip(
+                `<div>
+                     Fresno County, CA — SVI 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bf040a4899ef902fd2ba12f9aa06d22e = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.9616, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_bf040a4899ef902fd2ba12f9aa06d22e.bindTooltip(
+                `<div>
+                     Imperial County, CA — SVI 0.99
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_de654834fec60ccfa725b1be191b2f1e = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.811, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_de654834fec60ccfa725b1be191b2f1e.bindTooltip(
+                `<div>
+                     Kern County, CA — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fa99460172c91e7feb10b0d8ab447ab9 = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.7042, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_fa99460172c91e7feb10b0d8ab447ab9.bindTooltip(
+                `<div>
+                     Kings County, CA — SVI 0.95
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3d2a961f527f385ddca7b7171f6ee65b = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.433, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_3d2a961f527f385ddca7b7171f6ee65b.bindTooltip(
+                `<div>
+                     Lake County, CA — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_18de70d2095818dc54e9317fe1897b0b = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.7558, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_18de70d2095818dc54e9317fe1897b0b.bindTooltip(
+                `<div>
+                     Madera County, CA — SVI 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6dda86e921cdf19ae45c54a34a090df6 = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8356, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_6dda86e921cdf19ae45c54a34a090df6.bindTooltip(
+                `<div>
+                     Mendocino County, CA — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_625b40b7dade463be5c22af0476527f9 = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.838000000000001, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_625b40b7dade463be5c22af0476527f9.bindTooltip(
+                `<div>
+                     Merced County, CA — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_72346fc11660ececc66426799a452e84 = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.5626, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_72346fc11660ececc66426799a452e84.bindTooltip(
+                `<div>
+                     Tehama County, CA — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_971cfac6924caa6270bc29dadbf521af = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.488199999999999, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_971cfac6924caa6270bc29dadbf521af.bindTooltip(
+                `<div>
+                     Tulare County, CA — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1ff122ec3c3a32a92ccc4f5c7d4b2e2c = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.5608, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_1ff122ec3c3a32a92ccc4f5c7d4b2e2c.bindTooltip(
+                `<div>
+                     Yuba County, CA — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_391631c7341eefab402f53e3ae951429 = L.circleMarker(
+                [39.0, -105.5],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4408, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_391631c7341eefab402f53e3ae951429.bindTooltip(
+                `<div>
+                     Las Animas County, CO — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e7f0ff3ac5fe8bcd5158fe09bf05a2eb = L.circleMarker(
+                [39.0, -105.5],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.721, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_e7f0ff3ac5fe8bcd5158fe09bf05a2eb.bindTooltip(
+                `<div>
+                     Otero County, CO — SVI 0.95
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e696f73b356923d5182a2f4b576d0c24 = L.circleMarker(
+                [39.0, -105.5],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.769, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_e696f73b356923d5182a2f4b576d0c24.bindTooltip(
+                `<div>
+                     Prowers County, CO — SVI 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f15ea366f2bad53ff32d96aa65901e45 = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4828, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_f15ea366f2bad53ff32d96aa65901e45.bindTooltip(
+                `<div>
+                     Columbia County, FL — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a1e63acd9d725e3f17f657cfd5865234 = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.9886, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_a1e63acd9d725e3f17f657cfd5865234.bindTooltip(
+                `<div>
+                     DeSoto County, FL — SVI 1.00
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fe1afd36315991fcbd6370d874dbe2e4 = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4102, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_fe1afd36315991fcbd6370d874dbe2e4.bindTooltip(
+                `<div>
+                     Franklin County, FL — SVI 0.90
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a81b590307ac3fea145689c8f8d55830 = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8452, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_a81b590307ac3fea145689c8f8d55830.bindTooltip(
+                `<div>
+                     Gadsden County, FL — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d7dff0bb4c1d11b4e36d928155640c0d = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4348, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_d7dff0bb4c1d11b4e36d928155640c0d.bindTooltip(
+                `<div>
+                     Glades County, FL — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9734dc9b6ff9528ff09dcab31eafb239 = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8818, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_9734dc9b6ff9528ff09dcab31eafb239.bindTooltip(
+                `<div>
+                     Hamilton County, FL — SVI 0.98
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_34b2ea2e27a29c4caf3009b67dbe6bb0 = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.958, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_34b2ea2e27a29c4caf3009b67dbe6bb0.bindTooltip(
+                `<div>
+                     Hardee County, FL — SVI 0.99
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_790324de3e6c6d5a677a39d7e22caa6e = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.967600000000001, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_790324de3e6c6d5a677a39d7e22caa6e.bindTooltip(
+                `<div>
+                     Hendry County, FL — SVI 0.99
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4767ac0ee60ca448ae953f7db4eccc1a = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.7822, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_4767ac0ee60ca448ae953f7db4eccc1a.bindTooltip(
+                `<div>
+                     Okeechobee County, FL — SVI 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_eda92c8271e464be4f3e8c8a0b85ea30 = L.circleMarker(
+                [28.6, -82.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.901, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_eda92c8271e464be4f3e8c8a0b85ea30.bindTooltip(
+                `<div>
+                     Putnam County, FL — SVI 0.98
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f22272522a30edf89259f9ceb80eb041 = L.circleMarker(
+                [32.6, -83.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.4732, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_f22272522a30edf89259f9ceb80eb041.bindTooltip(
+                `<div>
+                     Appling County, GA — SVI 0.91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b37907e30e84390a02780951612910be = L.circleMarker(
+                [32.6, -83.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.538, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_b37907e30e84390a02780951612910be.bindTooltip(
+                `<div>
+                     Baldwin County, GA — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ff0de5583762308101cbf91dfd7f1b7c = L.circleMarker(
+                [32.6, -83.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.559000000000001, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_ff0de5583762308101cbf91dfd7f1b7c.bindTooltip(
+                `<div>
+                     Ben Hill County, GA — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fc25ce706cb750189c0b93a2cad060f3 = L.circleMarker(
+                [32.6, -83.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.7864, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_fc25ce706cb750189c0b93a2cad060f3.bindTooltip(
+                `<div>
+                     Bibb County, GA — SVI 0.96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0ed812f672fd52227147f9639e84ff7f = L.circleMarker(
+                [32.6, -83.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.565, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_0ed812f672fd52227147f9639e84ff7f.bindTooltip(
+                `<div>
+                     Brooks County, GA — SVI 0.93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_46eb8c7f3f0a867f8af2972ae49b2dc8 = L.circleMarker(
+                [32.6, -83.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.8128, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_46eb8c7f3f0a867f8af2972ae49b2dc8.bindTooltip(
+                `<div>
+                     Calhoun County, GA — SVI 0.97
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fdca7fa170ac362dc6a15f0d7dfa510d = L.circleMarker(
+                [32.6, -83.4],
+                {"bubblingMouseEvents": true, "color": "#6a1b9a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6a1b9a", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.496, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_fdca7fa170ac362dc6a15f0d7dfa510d.bindTooltip(
+                `<div>
+                     Candler County, GA — SVI 0.92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_a0eede5d1387c663bc1b6b26e8ed2c26 = L.polyline(
+                [[42.3, -71.8], [31.0, -92.0]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.415799432355724}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_a0eede5d1387c663bc1b6b26e8ed2c26.bindTooltip(
+                `<div>
+                     Donate: MA → Madison Parish, LA (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ef433b4da95d0f62d73d5db1876ab2ca = L.circleMarker(
+                [42.3, -71.8],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_ef433b4da95d0f62d73d5db1876ab2ca.bindTooltip(
+                `<div>
+                     Source: MA risk 0.14
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_6583e8cac2b1a345a3291f1fbecd7bc7 = L.polyline(
+                [[42.3, -71.8], [34.4, -106.1]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.415799432355724}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_6583e8cac2b1a345a3291f1fbecd7bc7.bindTooltip(
+                `<div>
+                     Donate: MA → Luna County, NM (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_498253db938c515be9e3da80380f6ccc = L.circleMarker(
+                [42.3, -71.8],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_498253db938c515be9e3da80380f6ccc.bindTooltip(
+                `<div>
+                     Source: MA risk 0.14
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_3df7df8f52c605e121ddc4c0b36b270b = L.polyline(
+                [[42.3, -71.8], [31.5, -99.3]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.415799432355724}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_3df7df8f52c605e121ddc4c0b36b270b.bindTooltip(
+                `<div>
+                     Donate: MA → Dimmit County, TX (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1805e81c38e74bf080485de83d103ca0 = L.circleMarker(
+                [42.3, -71.8],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_1805e81c38e74bf080485de83d103ca0.bindTooltip(
+                `<div>
+                     Source: MA risk 0.14
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_e9284d9dd33b6f2d5ed97245e9afc6e5 = L.polyline(
+                [[37.5, -85.3], [31.0, -92.0]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.3486035764516777}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_e9284d9dd33b6f2d5ed97245e9afc6e5.bindTooltip(
+                `<div>
+                     Donate: KY → Evangeline Parish, LA (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_795dc7b253d9ca8259fa3be12fc4b7c7 = L.circleMarker(
+                [37.5, -85.3],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_795dc7b253d9ca8259fa3be12fc4b7c7.bindTooltip(
+                `<div>
+                     Source: KY risk 0.12
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_7254211481006282c3696e76516a8869 = L.polyline(
+                [[37.5, -85.3], [34.9, -92.4]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.3486035764516777}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_7254211481006282c3696e76516a8869.bindTooltip(
+                `<div>
+                     Donate: KY → Chicot County, AR (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_84a8bdc731d7fa2464a5e6d1c4666974 = L.circleMarker(
+                [37.5, -85.3],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_84a8bdc731d7fa2464a5e6d1c4666974.bindTooltip(
+                `<div>
+                     Source: KY risk 0.12
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_feaa16d3c831257c33c2e3af249e44a0 = L.polyline(
+                [[37.5, -85.3], [35.6, -79.4]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.3486035764516777}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_feaa16d3c831257c33c2e3af249e44a0.bindTooltip(
+                `<div>
+                     Donate: KY → Lenoir County, NC (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_61aa70b57cce9e0d2952e3510cf70a74 = L.circleMarker(
+                [37.5, -85.3],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_61aa70b57cce9e0d2952e3510cf70a74.bindTooltip(
+                `<div>
+                     Source: KY risk 0.12
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_d974e8098c3e2e1d1ca86194471ed484 = L.polyline(
+                [[41.7, -71.5], [28.6, -82.4]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.268012964348043}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_d974e8098c3e2e1d1ca86194471ed484.bindTooltip(
+                `<div>
+                     Donate: RI → DeSoto County, FL (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e5e57eef7eb1b004c165523c388b78ba = L.circleMarker(
+                [41.7, -71.5],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_e5e57eef7eb1b004c165523c388b78ba.bindTooltip(
+                `<div>
+                     Source: RI risk 0.09
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_d337469feee5fdcbd406cac7534d0a10 = L.polyline(
+                [[41.7, -71.5], [34.3, -111.7]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.268012964348043}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_d337469feee5fdcbd406cac7534d0a10.bindTooltip(
+                `<div>
+                     Donate: RI → Yuma County, AZ (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f1fc360306d5df9e05eb1a7d3be366d2 = L.circleMarker(
+                [41.7, -71.5],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_f1fc360306d5df9e05eb1a7d3be366d2.bindTooltip(
+                `<div>
+                     Source: RI risk 0.09
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_e1e7b1e7a8cab1a4da63b55bd4639f89 = L.polyline(
+                [[41.7, -71.5], [32.7, -89.7]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.268012964348043}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_e1e7b1e7a8cab1a4da63b55bd4639f89.bindTooltip(
+                `<div>
+                     Donate: RI → Yazoo County, MS (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4a772474177399c8ce4ea74dde582107 = L.circleMarker(
+                [41.7, -71.5],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_4a772474177399c8ce4ea74dde582107.bindTooltip(
+                `<div>
+                     Source: RI risk 0.09
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_4d711cc85f4784c19dc18cf6aa07063a = L.polyline(
+                [[37.2, -119.4], [32.7, -89.7]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.215751075637588}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_4d711cc85f4784c19dc18cf6aa07063a.bindTooltip(
+                `<div>
+                     Donate: CA → Washington County, MS (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_351e797eeda91dd99d9b935f70aabb89 = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_351e797eeda91dd99d9b935f70aabb89.bindTooltip(
+                `<div>
+                     Source: CA risk 0.07
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_389709427a94cb42b0ed7645c94dcd6c = L.polyline(
+                [[37.2, -119.4], [31.5, -99.3]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.215751075637588}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_389709427a94cb42b0ed7645c94dcd6c.bindTooltip(
+                `<div>
+                     Donate: CA → Zapata County, TX (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ce1b1fcd42f4794b5ef992c7ec172844 = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_ce1b1fcd42f4794b5ef992c7ec172844.bindTooltip(
+                `<div>
+                     Source: CA risk 0.07
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_4b244091664acc0e8b2f42714b521bb2 = L.polyline(
+                [[37.2, -119.4], [42.9, -75.6]],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#d84315", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 2.215751075637588}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            poly_line_4b244091664acc0e8b2f42714b521bb2.bindTooltip(
+                `<div>
+                     Donate: CA → Bronx County, NY (SVI 1.00)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_988c75963fdfd775083c55c73e48389f = L.circleMarker(
+                [37.2, -119.4],
+                {"bubblingMouseEvents": true, "color": "#d84315", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d84315", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_ffde409599246acf183c2c1ef0093562);
+        
+    
+            circle_marker_988c75963fdfd775083c55c73e48389f.bindTooltip(
+                `<div>
+                     Source: CA risk 0.07
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>
