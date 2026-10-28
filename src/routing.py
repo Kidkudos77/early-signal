@@ -162,6 +162,108 @@ def donate_routing_vectors(
     return pd.DataFrame(rows)
 
 
+# ---------------------------------------------------------------------------
+# Decision logic — map risk to an automatic recommended routing action.
+# ---------------------------------------------------------------------------
+# Mapping from risk tier to the recommended scenario NAME (must match a
+# ROUTING_SCENARIOS entry). This is the backend "heavy lifting" that frees the
+# manager from toggling values themselves.
+def recommend_scenario(p_exceeds: float | None, posterior_mean: float,
+                       tau: float) -> tuple[str, str]:
+    """Return (scenario_name, plain-English rationale) for the current risk.
+
+    Decision tiers (driven by P(risk > tau), the actionable alert signal):
+      * >= 0.50  -> Divert to Cooked Lines   (decisive protective action)
+      * >= tier2 -> Trigger Enhanced Interventions (low-cost mitigation)
+      * else     -> Adjust Transit Radii     (cheapest baseline posture)
+    When P(risk>tau) is unavailable (national baseline), fall back to the
+    posterior mean vs. tau.
+    """
+    signal = p_exceeds if p_exceeds is not None else posterior_mean
+    if signal >= 0.50:
+        return ("Divert to Cooked Lines",
+                "Risk is high enough to justify a decisive heat kill-step while "
+                "retaining all protein.")
+    if signal >= 0.20:
+        return ("Trigger Enhanced Interventions",
+                "Elevated risk warrants low-cost antimicrobial interventions on "
+                "the line.")
+    return ("Adjust Transit Radii",
+            "Baseline risk — maintain the cheapest protective posture by "
+            "tightening cold-chain transit.")
+
+
+RISK_TIERS = (
+    # (min P(risk>tau), label, emoji, color)
+    (0.50, "HIGH", "🔴", "#c62828"),
+    (0.20, "ELEVATED", "🟠", "#ef6c00"),
+    (0.00, "BASELINE", "🟢", "#2e7d32"),
+)
+
+
+def risk_tier(p_exceeds: float | None, posterior_mean: float) -> tuple[str, str, str]:
+    """Return (label, emoji, color) for the risk level — the executive KPI tier."""
+    signal = p_exceeds if p_exceeds is not None else posterior_mean
+    for threshold, label, emoji, color in RISK_TIERS:
+        if signal >= threshold:
+            return label, emoji, color
+    return "BASELINE", "🟢", "#2e7d32"
+
+
+def risk_drivers(
+    *, state: str, month: int, posterior_mean: float, prior_mean: float,
+    national_month: float, national_overall: float, is_peak_season: bool,
+    shap_top: list[tuple[str, float]] | None = None,
+) -> list[str]:
+    """Plain-English risk drivers — honest, derived from what the model computes.
+
+    We explain the drivers the (state, month) Bayesian model + Step 3 SHAP
+    actually use: the SEASONAL lift (month vs. national average), the GEOGRAPHIC
+    lift (this state/month vs. national this month), and — when available — the
+    top SHAP features. We deliberately do NOT invent signals the model never saw
+    (e.g. a specific NOAA temperature spike); where a driver is structural we
+    say so.
+    """
+    drivers: list[str] = []
+    month_names = ["", "January", "February", "March", "April", "May", "June",
+                   "July", "August", "September", "October", "November", "December"]
+
+    # 1. Seasonal effect.
+    season_lift = national_month - national_overall
+    if is_peak_season and season_lift > 0.01:
+        drivers.append(
+            f"Seasonal peak — {month_names[month]} historically runs "
+            f"{season_lift * 100:+.0f} pts above the yearly average "
+            f"(summer Salmonella surge).")
+    elif season_lift < -0.01:
+        drivers.append(
+            f"Off-peak season — {month_names[month]} runs {season_lift * 100:+.0f} "
+            f"pts vs. the yearly average, lowering baseline risk.")
+    else:
+        drivers.append(f"Seasonal effect for {month_names[month]} is near the "
+                       f"yearly average.")
+
+    # 2. Geographic effect (cell posterior vs. national this month).
+    geo_lift = posterior_mean - national_month
+    if abs(geo_lift) > 0.01:
+        direction = "above" if geo_lift > 0 else "below"
+        drivers.append(
+            f"Geographic effect — {state} in {month_names[month]} sits "
+            f"{abs(geo_lift) * 100:.0f} pts {direction} the national level for "
+            f"this month.")
+
+    # 3. SHAP top features (Step 3), if provided.
+    if shap_top:
+        feats = ", ".join(f"{name}" for name, _ in shap_top[:3])
+        drivers.append(f"Top model features for this prediction: {feats}.")
+    else:
+        drivers.append(
+            "Model features (full SHAP breakdown in Detailed Diagnostics): "
+            "season encoding, exposure state, and outbreak setting.")
+
+    return drivers
+
+
 __all__ = [
     "RoutingScenario",
     "ROUTING_SCENARIOS",
@@ -169,4 +271,8 @@ __all__ = [
     "STATE_CENTROIDS",
     "high_vulnerability_counties",
     "donate_routing_vectors",
+    "recommend_scenario",
+    "risk_tier",
+    "risk_drivers",
+    "RISK_TIERS",
 ]

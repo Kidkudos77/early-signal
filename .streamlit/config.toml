@@ -9,9 +9,7 @@ font = "sans serif"
 
 [server]
 headless = true
-# Streamlit Cloud sets the port; these are safe local defaults.
-enableCORS = false
-enableXsrfProtection = true
+# Streamlit Cloud manages CORS/XSRF and the port; no manual overrides needed.
 
 [browser]
 gatherUsageStats = false
